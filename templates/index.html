@@ -59,6 +59,7 @@
                 const response = await fetch(url)
                 const json = await response.json()
                 this.board = json
+                this.onBoardReceived(json)
                 return json
             }
             
@@ -68,6 +69,7 @@
                 url.search = params
                 const response = await fetch(url)
                 const json = await response.json()
+                this.onBoardReceived(json)
                 return json
             }
             
@@ -77,6 +79,7 @@
                 url.search = params
                 const response = await fetch(url)
                 const json = await response.json()
+                this.onBoardReceived(json)
                 return json
             }
             
@@ -86,7 +89,12 @@
                 url.search = params
                 const response = await fetch(url)
                 const json = await response.json()
+                this.onBoardReceived(json)
                 return json
+            }
+            
+            bindBoardReceived(callback) {
+                this.onBoardReceived = callback
             }
         }
         
@@ -143,18 +151,23 @@
                 this.model = model
                 this.view = view
                 
+                this.model.bindBoardReceived(this.handleBoardReceived)
                 this.view.bindBoardClick(this.handleBoardClick)
                 this.view.bindBoardContextMenu(this.handleContextMenu)
-                this.refreshBoard()
+                
+                this.model.getBoard()
             }
+            
+            handleBoardReceived = board => {
+                this.view.drawBoard(board)
+            }                
             
             handleBoardClick = (row, col) => {
                 this.revealCellArea(row, col)
             }
             
             handleContextMenu = async (row, col) => {
-                let board = await this.model.getBoard() // why not this.model.board.rows?
-                let cell = board.rows[row][col]
+                let cell = this.model.board.rows[row][col]
 
                 cell.flagged ? 
                     this.removeFlag(row, col) :
@@ -163,28 +176,21 @@
             
             async refreshBoard() {
                 let board = await this.model.getBoard()
-                this.view.drawBoard(board)
             }
             
             revealCellArea = async (row, col) => {
                 let board = await this.model.revealCellArea(row, col)
-                this.view.drawBoard(board)
             }
             
             async placeFlag(row, col) {
                 let board = await this.model.placeFlag(row, col)
-                this.view.drawBoard(board)
             }
             
             async removeFlag(row, col) {
-                console.log('removing flag')
                 let board = await this.model.removeFlag(row, col)
-                this.view.drawBoard(board)
             }
         }
         
         let app = new Controller(new Model(), new View())
-        
-        
         </script>
     </html>
