@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+    <html>
+        <head>
+            <style>
+            </style>
+        </head>
+        <body>
+            minesweeper
+            <table id="board"></table>
+        </body>
+        <script>
+               
+        class Model {
+            constructor() {}
+               
+             async getBoard() {
+                const url = 'http://127.0.0.1:8000/get_board'
+                const response = await fetch(url)
+                const json = await response.json()
+                return json
+            }
+            
+            async revealCellArea(row, col) {
+                const url = new URL('http://127.0.0.1:8000/reveal_cell_area')
+                const params = new URLSearchParams({'row': row, 'col': col})
+                url.search = params
+                const response = await fetch(url)
+                const json = await response.json()
+                return json
+            }
+            
+            async placeFlag(row, col) {
+                const url = new URL('http://127.0.0.1:8000/place_flag')
+                const params = new URLSearchParams({'row': row, 'col': col})
+                url.search = params
+                const response = await fetch(url)
+                const json = await response.json()
+                return json
+            }
+            
+            async removeFlag(row, col) {
+                const url = new URL('http://127.0.0.1:8000/remove_flag')
+                const params = new URLSearchParams({'row': row, 'col': col})
+                url.search = params
+                const response = await fetch(url)
+                const json = await response.json()
+                return json
+            }
+        }
+        
+        class View {
+            constructor() {
+                this.board = document.getElementById('board')
+            }
+            
+            drawBoard(board, cell_click_handler) {
+                let n_rows = board.n_rows
+                let n_cols = board.n_cols
+                let cells = board.cells
+                let rows = board.rows
+                console.log('drawing board', board)
+                
+                this.board.innerHTML = ''
+                
+                // cells.forEach(cell => {
+                    // let el = document.createElement('div')
+                    // el.className = 'cell'
+                    // el.style.float = 'left'
+                    // el.textContent = cell.symbol
+                    // this.board.appendChild(el)
+                // })
+                
+                rows.forEach(row => {
+                    let tr = document.createElement('tr')
+                    row.forEach(cell => {
+                        let td = document.createElement('td')
+                        td.textContent = cell.symbol
+                        tr.appendChild(td)
+                        
+                        td.addEventListener('click', e => {
+                            if (e.button === 0) this.onTableCellLeftClick(cell.row, cell.col)
+                            if (e.button === 2) this.onTableCellRightClick(cell.row, cell.col)
+                        })
+                    })
+                    this.board.appendChild(tr)
+                })
+            }
+            
+            drawCell() {}
+            
+            bindOnTableCellLeftClick(callback) {
+                this.onTableCellLeftClick = callback
+            }
+            
+            bindOnTableCellRightClick(callback) {
+                this.onTableCellRightClick = callback
+            }
+        }
+        
+        class Controller {
+            constructor(model, view) {
+                this.model = model
+                this.view = view
+                
+                this.view.bindOnTableCellLeftClick(this.revealCellArea)
+                this.view.bindOnTableCellRightClick(this.placeFlag)
+                
+                this.refreshBoard()
+            }
+            
+            async refreshBoard() {
+                let board = await this.model.getBoard()
+                this.view.drawBoard(board)
+            }
+            
+            revealCellArea = async (row, col) => {
+                let board = await this.model.revealCellArea(row, col)
+                this.view.drawBoard(board)
+            }
+            
+            async placeFlag(row, col) {
+                let board = await this.model.placeFlag(row, col)
+                this.view.drawBoard(board)
+            }
+            
+            async removeFlag(row, col) {
+                let board = await this.model.removeFlag(row, col)
+                this.view.drawBoard(board)
+            }
+        }
+        
+        let app = new Controller(new Model(), new View())
+        
+        
+        </script>
+    </html>

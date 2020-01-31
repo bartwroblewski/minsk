@@ -9,12 +9,13 @@ class NotEnoughBoardCellsError(Exception):
 
 class GameSettings:
     def __init__(self):
-        self.n_rows = 16
-        self.n_cols = 16
-        self.board_size_to_mines_ratio = 6
+        self.n_rows = 10
+        self.n_cols = 10
+        self.board_size_to_mines_ratio = 8
         self.n_mines = int(round(
             self.n_rows * self.n_cols / self.board_size_to_mines_ratio
         ))
+        self.n_mines = 2
 
 class Game:
     def __init__(self):
@@ -23,6 +24,12 @@ class Game:
             self.settings.n_rows, 
             self.settings.n_cols,
         )
+        
+        self.score = 0
+        
+    def check_score(self):
+        if self.score == self.settings.n_mines:
+            self.end('You won!')
         
     def place_mine_randomly(self):
         random_cell = self.board.get_random_cell()
@@ -47,16 +54,29 @@ class Game:
             self.place_mine_randomly()
     
     def place_flag(self, row, col):
-        if self.board[row][col] == self.board.EMPTY_SYMBOL:
-            self.board[row][col] =  self.board.FLAG_SYMBOL
+        cell = self.board[row][col]
+        
+        if not cell.hidden:
+            return 'Cannot flag an already revealed cell!'
+            
+        cell.flagged = True
+        if cell.mined:
+            self.score += 1           
+        self.check_score()
+        # if self.board[row][col] == self.board.EMPTY_SYMBOL:
+            # self.board[row][col] =  self.board.FLAG_SYMBOL
         
     def remove_flag(self, row, col):
-        if self.board[row][col] == self.board.FLAG_SYMBOL:
-            self.board[row][col] =  self.board.EMPTY_SYMBOL
+        cell = self.board[row][col]
+        if cell.flagged: # needed?
+            cell.flagged = False
+        
+        # if self.board[row][col] == self.board.FLAG_SYMBOL:
+            # self.board[row][col] =  self.board.EMPTY_SYMBOL
             
     def reveal_cell_area(self, cell):
         if cell.mined:
-            self.end()
+            self.end('You stepped on a mine!')
         else:
             cell.hidden = False
             # next_top   = self.board[cell.row -1 ][cell.col]
@@ -81,8 +101,8 @@ class Game:
                     if cell.value == 0 and adjacent_cell.hidden and not adjacent_cell.mined:
                         self.reveal_cell_area(adjacent_cell)
        
-    def end(self):
-        print('You steeped on a mine!')      
+    def end(self, message):
+        print(message)      
 
 class Cell:
     def __init__(self, row, col):
@@ -113,12 +133,23 @@ class Cell:
             s = 'x'
         if not self.hidden:
             s = self.value
-        if self.mined:
-            s = 'm'
+        # if self.mined:
+            # s = 'm'
         if self.flagged:
             s = 'f'
         return s
-       
+        
+    def to_dict(self):
+        d = {
+            'row': str(self.row),
+            'col': str(self.col),
+            'hidden': self.hidden,
+            'mined': self.mined,
+            'flagged': self.flagged,
+            'symbol': self.symbol(),
+        }
+        return d
+        
 class Board:
     EMPTY_SYMBOL = 'x'
     MINE_SYMBOL = 'm'
@@ -182,7 +213,7 @@ class Board:
         print('\n')
         
     def show_symbols(self):
-        print(' '.join(str(i) for i in range(self.n_cols)))
+        # print(' '.join(str(i) for i in range(self.n_cols)))
         for row in self.board:
             s = ' '.join(str(cell.symbol()) for cell in row)
             print(s)
@@ -192,22 +223,36 @@ class Board:
         s = ''
         for row in self.board:
             s += ' '.join(str(cell.symbol()) for cell in row)
-            #~ s += '\n'
+            s += '\n'
+        print(s)
         return s
- 
+                
+    def to_dict(self):
+        d = {
+            'n_rows': self.n_rows,
+            'n_cols': self.n_cols,
+            'cells': [cell.to_dict() for row in self.board for cell in row],
+            'rows': [[cell.to_dict() for cell in row]for row in self.board],
+        }
+        return d
+
 def main():
     game = Game()
     game.place_mines_randomly()
     game.update_neighbours()
     
     while True:
-        #~ game.board.show_symbols()
-        print(game.board.as_string())
-        cell = input('row, col to unhide?').split(' ')
-        cell = game.board[int(cell[0])][int(cell[1])]
+        game.board.show_symbols()
         
-        game.reveal_cell_area(cell)
+        action = input('reveal or flag (r/f)?')
+        row, col = input('row, col').split(' ')
+        cell = game.board[int(row)][int(col)]
         
+        if action == 'r':
+            game.reveal_cell_area(cell)
+        if action == 'f':
+            game.place_flag(cell.row, cell.col)
+    
 if __name__ == '__main__':
     main()
     
