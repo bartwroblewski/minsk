@@ -79,15 +79,6 @@ class Game:
             self.end('You stepped on a mine!')
         else:
             cell.hidden = False
-            # next_top   = self.board[cell.row -1 ][cell.col]
-            # next_right = self.board[cell.row][cell.col + 1]
-            # next_down  = self.board[cell.row + 1][cell.col]
-            # next_left  = self.board[cell.row][cell.col - 1]
-            
-            # self.reveal_cell_area(next_top)
-            # self.reveal_cell_area(next_right)
-            # self.reveal_cell_area(next_down)
-            # self.reveal_cell_area(next_left)
             
             adjacent = (
                 (cell.row - 1, cell.col),
