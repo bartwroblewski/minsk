@@ -9,13 +9,12 @@ class NotEnoughBoardCellsError(Exception):
 
 class GameSettings:
     def __init__(self):
-        self.n_rows = 10
-        self.n_cols = 10
-        self.board_size_to_mines_ratio = 8
+        self.n_rows = 20
+        self.n_cols = 20
+        self.mines_ratio = 8
         self.n_mines = int(round(
-            self.n_rows * self.n_cols / self.board_size_to_mines_ratio
+            self.n_rows * self.n_cols / self.mines_ratio
         ))
-        self.n_mines = 2
 
 class Game:
     def __init__(self):
@@ -132,11 +131,14 @@ class Cell:
         if self.hidden:
             s = 'x'
         if not self.hidden:
-            s = self.value
+            if self.value == 0:
+                s = ' '
+            else:
+                s = self.value
         # if self.mined:
             # s = 'm'
         if self.flagged:
-            s = 'f'
+            s = '?'
         return s
         
     def to_dict(self):
@@ -147,6 +149,7 @@ class Cell:
             'mined': self.mined,
             'flagged': self.flagged,
             'symbol': self.symbol(),
+            'value': self.value,
         }
         return d
         
@@ -232,7 +235,7 @@ class Board:
             'n_rows': self.n_rows,
             'n_cols': self.n_cols,
             'cells': [cell.to_dict() for row in self.board for cell in row],
-            'rows': [[cell.to_dict() for cell in row]for row in self.board],
+            'rows': [[cell.to_dict() for cell in row] for row in self.board],
         }
         return d
 

@@ -2,11 +2,39 @@
     <html>
         <head>
             <style>
+                body {
+                    background: rgb(100, 100, 100);
+                }
+                
+                td {
+                    border: 1px solid black;
+                    width: 15px;
+                    height: 15px;
+                    text-align: center;
+                } 
+                .grey {
+                    //color: grey;
+                    background: grey;
+                }
+                
+                #board {
+                    background: rgb(175, 175, 175);
+                }
+                
+                #board_container {
+                    display: flex;
+                    justify-content: center;
+                }
             </style>
         </head>
         <body>
-            minesweeper
-            <table id="board"></table>
+            <p>
+                MIN<span class="grey">SK</span><br>
+                minesweeper in <span class="grey">Flask</span>
+            </p>
+            <div id="board_container">
+                <table id="board"></table>
+            </div>
         </body>
         <script>
                
@@ -51,6 +79,7 @@
         class View {
             constructor() {
                 this.board = document.getElementById('board')
+                    
             }
             
             drawBoard(board, cell_click_handler) {
@@ -75,25 +104,31 @@
                     row.forEach(cell => {
                         let td = document.createElement('td')
                         td.textContent = cell.symbol
+                        if (cell.hidden) {
+                            td.classList.add('grey')
+                            if (!cell.flagged) td.textContent = ''
+                        }
+                        td.id = cell.col
                         tr.appendChild(td)
-                        
-                        td.addEventListener('click', e => {
-                            if (e.button === 0) this.onTableCellLeftClick(cell.row, cell.col)
-                            if (e.button === 2) this.onTableCellRightClick(cell.row, cell.col)
-                        })
                     })
                     this.board.appendChild(tr)
                 })
             }
             
-            drawCell() {}
-            
-            bindOnTableCellLeftClick(callback) {
-                this.onTableCellLeftClick = callback
+            bindBoardClick(handler) {
+                this.board.addEventListener('click', e => {
+                    let row = e.target.parentElement.rowIndex
+                    let col = e.target.id
+                    handler(row, col)
+                })
             }
             
-            bindOnTableCellRightClick(callback) {
-                this.onTableCellRightClick = callback
+            bindBoardDblClick(handler) {
+                this.board.addEventListener('dblclick', e => {
+                    let row = e.target.parentElement.rowIndex
+                    let col = e.target.id
+                    handler(row, col)
+                })
             }
         }
         
@@ -102,10 +137,17 @@
                 this.model = model
                 this.view = view
                 
-                this.view.bindOnTableCellLeftClick(this.revealCellArea)
-                this.view.bindOnTableCellRightClick(this.placeFlag)
-                
+                this.view.bindBoardClick(this.handleBoardClick)
+                this.view.bindBoardDblClick(this.handleBoardDblClick)
                 this.refreshBoard()
+            }
+            
+            handleBoardClick = (row, col) => {
+                this.revealCellArea(row, col)
+            }
+            
+            handleBoardDblClick = (row, col) => {
+                this.placeFlag(row, col)
             }
             
             async refreshBoard() {
