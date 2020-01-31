@@ -32,6 +32,7 @@ def reveal_cell_area():
     
 @app.route('/place_flag')
 def place_flag():
+    print('placing flag')
     row = int(request.args.get('row'))
     col = int(request.args.get('col'))
     
@@ -40,6 +41,7 @@ def place_flag():
     
 @app.route('/remove_flag')
 def remove_flag():
+    print('removing flag')
     row = int(request.args.get('row'))
     col = int(request.args.get('col'))
     

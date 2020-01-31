@@ -69,6 +69,7 @@ class Game:
         cell = self.board[row][col]
         if cell.flagged: # needed?
             cell.flagged = False
+            print('removed flag')
         
         # if self.board[row][col] == self.board.FLAG_SYMBOL:
             # self.board[row][col] =  self.board.EMPTY_SYMBOL
@@ -234,7 +235,7 @@ class Board:
         d = {
             'n_rows': self.n_rows,
             'n_cols': self.n_cols,
-            'cells': [cell.to_dict() for row in self.board for cell in row],
+            #~ 'cells': [cell.to_dict() for row in self.board for cell in row],
             'rows': [[cell.to_dict() for cell in row] for row in self.board],
         }
         return d

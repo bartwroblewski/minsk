@@ -1,9 +1,17 @@
 <!DOCTYPE HTML>
     <html>
         <head>
+<!--
+            <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+-->
             <style>
                 body {
                     background: rgb(100, 100, 100);
+                    //font-family: Oswald;
+                }
+                
+                #logo {
+                   // letter-spacing: 1px;
                 }
                 
                 td {
@@ -19,6 +27,7 @@
                 
                 #board {
                     background: rgb(175, 175, 175);
+                    font-size: 10px;
                 }
                 
                 #board_container {
@@ -28,7 +37,7 @@
             </style>
         </head>
         <body>
-            <p>
+            <p id="logo">
                 MIN<span class="grey">SK</span><br>
                 minesweeper in <span class="grey">Flask</span>
             </p>
@@ -45,6 +54,7 @@
                 const url = 'http://127.0.0.1:8000/get_board'
                 const response = await fetch(url)
                 const json = await response.json()
+                this.board = json
                 return json
             }
             
@@ -79,7 +89,6 @@
         class View {
             constructor() {
                 this.board = document.getElementById('board')
-                    
             }
             
             drawBoard(board, cell_click_handler) {
@@ -90,14 +99,6 @@
                 console.log('drawing board', board)
                 
                 this.board.innerHTML = ''
-                
-                // cells.forEach(cell => {
-                    // let el = document.createElement('div')
-                    // el.className = 'cell'
-                    // el.style.float = 'left'
-                    // el.textContent = cell.symbol
-                    // this.board.appendChild(el)
-                // })
                 
                 rows.forEach(row => {
                     let tr = document.createElement('tr')
@@ -123,8 +124,9 @@
                 })
             }
             
-            bindBoardDblClick(handler) {
-                this.board.addEventListener('dblclick', e => {
+            bindBoardContextMenu(handler) {
+                this.board.addEventListener('contextmenu', e => {
+                    e.preventDefault()
                     let row = e.target.parentElement.rowIndex
                     let col = e.target.id
                     handler(row, col)
@@ -138,7 +140,7 @@
                 this.view = view
                 
                 this.view.bindBoardClick(this.handleBoardClick)
-                this.view.bindBoardDblClick(this.handleBoardDblClick)
+                this.view.bindBoardContextMenu(this.handleContextMenu)
                 this.refreshBoard()
             }
             
@@ -146,8 +148,13 @@
                 this.revealCellArea(row, col)
             }
             
-            handleBoardDblClick = (row, col) => {
-                this.placeFlag(row, col)
+            handleContextMenu = async (row, col) => {
+                let board = await this.model.getBoard() // why not this.model.board.rows?
+                let cell = board.rows[row][col]
+
+                cell.flagged ? 
+                    this.removeFlag(row, col) :
+                    this.placeFlag(row, col)
             }
             
             async refreshBoard() {
@@ -166,6 +173,7 @@
             }
             
             async removeFlag(row, col) {
+                console.log('removing flag')
                 let board = await this.model.removeFlag(row, col)
                 this.view.drawBoard(board)
             }
