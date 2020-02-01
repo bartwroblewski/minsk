@@ -207,6 +207,14 @@
                 this.view.bindGamesListItemClicked(this.handleGamesListItemClicked)
                 
                 this.model.startNewGame()
+                this.pollBoardChanges()
+            }
+            
+            pollBoardChanges = () => {
+                let interval = setInterval(() => {
+                    console.log('polling')
+                    this.model.getGameBoard(this.model.game_id)
+                }, 1000)
             }
             
             handleGameDataReceived = game_data => {
