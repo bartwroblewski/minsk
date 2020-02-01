@@ -45,6 +45,7 @@
                 MIN<span class="silver_text">SK</span><br>
                 minesweeper in <span class="silver_text">Flask</span>
             </p>
+            <button id="new_game_button">New game</button>
             <div id="board_container">
                 <table id="board"></table>
             </div>
@@ -54,8 +55,8 @@
         class Model {
             constructor() {}
                
-             async getBoard() {
-                const url = 'http://127.0.0.1:8000/get_board'
+             async startNewGame() {
+                const url = 'http://127.0.0.1:8000/start_new_game'
                 const response = await fetch(url)
                 const json = await response.json()
                 this.onBoardReceived(json)
@@ -90,6 +91,7 @@
         class View {
             constructor() {
                 this.board = document.getElementById('board')
+                this.new_game_button = document.getElementById('new_game_button')
             }
             
             drawBoard(board, cell_click_handler) {
@@ -117,6 +119,12 @@
                 })
             }
             
+            bindNewGameClick(handler) {
+                this.new_game_button.addEventListener('click', e => {
+                    handler()
+                })
+            }
+            
             bindBoardClick(handler) {
                 this.board.addEventListener('click', e => {
                     let row = e.target.parentElement.rowIndex
@@ -141,15 +149,20 @@
                 this.view = view
                 
                 this.model.bindBoardReceived(this.handleBoardReceived)
+                this.view.bindNewGameClick(this.handleNewGameClick)
                 this.view.bindBoardClick(this.handleBoardClick)
                 this.view.bindBoardContextMenu(this.handleContextMenu)
                 
-                this.model.getBoard()
+                this.model.startNewGame()
             }
             
             handleBoardReceived = board => {
                 this.view.drawBoard(board)
-            }                
+            }      
+            
+            handleNewGameClick = () => {
+                this.model.startNewGame()
+            }
             
             handleBoardClick = (row, col) => {
                 this.revealCellArea(row, col)

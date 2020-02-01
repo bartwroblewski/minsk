@@ -24,6 +24,9 @@ class Game:
             self.settings.n_cols,
         )
         
+        self.place_mines_randomly()
+        self.update_neighbours()
+        
         self.score = 0
         
     def check_score(self):

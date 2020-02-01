@@ -8,16 +8,15 @@ from flask import (
 from minesweeper import Game 
 
 app = Flask(__name__)
-game = Game()
-game.place_mines_randomly()
-game.update_neighbours()
+game = None
 
 @app.route('/')
 def index(): 
     return render_template('index.html')
 
-@app.route('/get_board')
-def get_board():
+@app.route('/start_new_game')
+def start_new_game():
+    game = Game()
     return jsonify(game.board.to_dict())
     
 @app.route('/reveal_cell_area')
@@ -26,7 +25,7 @@ def reveal_cell_area():
     col = int(request.args.get('col'))
     
     cell = game.board[row][col]
-    
+
     game.reveal_cell_area(cell)
     return jsonify(game.board.to_dict())
     
