@@ -30,22 +30,12 @@ def reveal_cell_area():
     game.reveal_cell_area(cell)
     return jsonify(game.board.to_dict())
     
-@app.route('/place_flag')
-def place_flag():
-    print('placing flag')
+@app.route('/toggle_flag')
+def toggle_flag():
     row = int(request.args.get('row'))
     col = int(request.args.get('col'))
     
-    game.place_flag(row, col)
-    return jsonify(game.board.to_dict())
-    
-@app.route('/remove_flag')
-def remove_flag():
-    print('removing flag')
-    row = int(request.args.get('row'))
-    col = int(request.args.get('col'))
-    
-    game.remove_flag(row, col)
+    game.toggle_flag(row, col)
     return jsonify(game.board.to_dict())
     
 if __name__ == '__main__':

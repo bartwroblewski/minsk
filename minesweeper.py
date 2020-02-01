@@ -52,27 +52,19 @@ class Game:
         for i in range(self.settings.n_mines):
             self.place_mine_randomly()
     
-    def place_flag(self, row, col):
+    def toggle_flag(self, row, col):
         cell = self.board[row][col]
         
         if not cell.hidden:
-            return 'Cannot flag an already revealed cell!'
+            return 'Cannot flag/unflag an already revealed cell!'
             
-        cell.flagged = True
-        if cell.mined:
-            self.score += 1           
-        self.check_score()
-        # if self.board[row][col] == self.board.EMPTY_SYMBOL:
-            # self.board[row][col] =  self.board.FLAG_SYMBOL
-        
-    def remove_flag(self, row, col):
-        cell = self.board[row][col]
-        if cell.flagged: # needed?
+        if cell.flagged:
             cell.flagged = False
-            print('removed flag')
-        
-        # if self.board[row][col] == self.board.FLAG_SYMBOL:
-            # self.board[row][col] =  self.board.EMPTY_SYMBOL
+        else:
+            cell.flagged = True
+            if cell.mined:
+                self.score += 1           
+            self.check_score()
             
     def reveal_cell_area(self, cell):
         if cell.mined:

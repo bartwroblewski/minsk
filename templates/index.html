@@ -58,7 +58,6 @@
                 const url = 'http://127.0.0.1:8000/get_board'
                 const response = await fetch(url)
                 const json = await response.json()
-                this.board = json
                 this.onBoardReceived(json)
                 return json
             }
@@ -73,18 +72,8 @@
                 return json
             }
             
-            async placeFlag(row, col) {
-                const url = new URL('http://127.0.0.1:8000/place_flag')
-                const params = new URLSearchParams({'row': row, 'col': col})
-                url.search = params
-                const response = await fetch(url)
-                const json = await response.json()
-                this.onBoardReceived(json)
-                return json
-            }
-            
-            async removeFlag(row, col) {
-                const url = new URL('http://127.0.0.1:8000/remove_flag')
+            async toggleFlag(row, col) {
+                const url = new URL('http://127.0.0.1:8000/toggle_flag')
                 const params = new URLSearchParams({'row': row, 'col': col})
                 url.search = params
                 const response = await fetch(url)
@@ -167,27 +156,15 @@
             }
             
             handleContextMenu = async (row, col) => {
-                let cell = this.model.board.rows[row][col]
-
-                cell.flagged ? 
-                    this.removeFlag(row, col) :
-                    this.placeFlag(row, col)
-            }
-            
-            async refreshBoard() {
-                let board = await this.model.getBoard()
+                this.toggleFlag(row, col)
             }
             
             revealCellArea = async (row, col) => {
                 let board = await this.model.revealCellArea(row, col)
             }
             
-            async placeFlag(row, col) {
-                let board = await this.model.placeFlag(row, col)
-            }
-            
-            async removeFlag(row, col) {
-                let board = await this.model.removeFlag(row, col)
+            async toggleFlag(row, col) {
+                let board = await this.model.toggleFlag(row, col)
             }
         }
         
