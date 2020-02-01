@@ -16,8 +16,19 @@ class GameSettings:
             self.n_rows * self.n_cols / self.mines_ratio
         ))
 
-class Game:
+class GameManager:
     def __init__(self):
+        self.games = {}
+        
+    def register_game(self, game):
+        self.games[game.id_] = game
+        
+    def get_game(self, game_id):
+        return self.games[game_id]
+
+class Game:
+    def __init__(self, id_):
+        self.id_ = id_
         self.settings = GameSettings()
         self.board = Board(
             self.settings.n_rows, 

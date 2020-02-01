@@ -53,38 +53,51 @@
         <script>
                
         class Model {
-            constructor() {}
+            constructor() {
+                this.game_id = ''
+            }
                
              async startNewGame() {
                 const url = 'http://127.0.0.1:8000/start_new_game'
                 const response = await fetch(url)
                 const json = await response.json()
-                this.onBoardReceived(json)
+                
+                this.game_id = json.game_id
+                this.onGameDataReceived(json)
+                
                 return json
             }
             
             async revealCellArea(row, col) {
                 const url = new URL('http://127.0.0.1:8000/reveal_cell_area')
-                const params = new URLSearchParams({'row': row, 'col': col})
+                const params = new URLSearchParams({
+                    'row': row,
+                    'col': col,
+                    'game_id': this.game_id,
+                })
                 url.search = params
                 const response = await fetch(url)
                 const json = await response.json()
-                this.onBoardReceived(json)
+                this.onGameDataReceived(json)
                 return json
             }
             
             async toggleFlag(row, col) {
                 const url = new URL('http://127.0.0.1:8000/toggle_flag')
-                const params = new URLSearchParams({'row': row, 'col': col})
+                const params = new URLSearchParams({
+                    'row': row,
+                    'col': col,
+                    'game_id': this.game_id,
+                })
                 url.search = params
                 const response = await fetch(url)
                 const json = await response.json()
-                this.onBoardReceived(json)
+                this.onGameDataReceived(json)
                 return json
             }
             
-            bindBoardReceived(callback) {
-                this.onBoardReceived = callback
+            bindGameDataReceived(callback) {
+                this.onGameDataReceived = callback
             }
         }
         
@@ -148,7 +161,7 @@
                 this.model = model
                 this.view = view
                 
-                this.model.bindBoardReceived(this.handleBoardReceived)
+                this.model.bindGameDataReceived(this.handleGameDataReceived)
                 this.view.bindNewGameClick(this.handleNewGameClick)
                 this.view.bindBoardClick(this.handleBoardClick)
                 this.view.bindBoardContextMenu(this.handleContextMenu)
@@ -156,8 +169,8 @@
                 this.model.startNewGame()
             }
             
-            handleBoardReceived = board => {
-                this.view.drawBoard(board)
+            handleGameDataReceived = game_data => {
+                this.view.drawBoard(game_data.board)
             }      
             
             handleNewGameClick = () => {
