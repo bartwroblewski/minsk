@@ -34,6 +34,16 @@ def start_new_game():
     }
     return jsonify(response)
     
+@app.route('/get_game_board')
+def get_game_board():
+    game_id = request.args.get('game_id')
+    game = game_manager.get_game(game_id)
+    
+    response = {
+        'board': game.board.to_dict(),
+    }
+    return jsonify(response)
+    
 @app.route('/reveal_cell_area')
 def reveal_cell_area():
     print(game_manager.games)

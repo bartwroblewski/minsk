@@ -46,10 +46,10 @@
                 minesweeper in <span class="silver_text">Flask</span>
             </p>
             <button id="new_game_button">New game</button>
-            <ul id="current_games_list"></ul>
             <div id="board_container">
                 <table id="board"></table>
             </div>
+            <ul id="current_games_list"></ul>
         </body>
         <script>
                
@@ -67,6 +67,19 @@
                 this.onGameDataReceived(json)
                 this.onGamesListReceived(json.current_games_ids)
                 
+                return json
+            }
+            
+            async getGameBoard(game_id) {
+                const url = new URL('http://127.0.0.1:8000/get_game_board')
+                const params = new URLSearchParams({'game_id': game_id})
+                url.search = params
+                const response = await fetch(url)
+                const json = await response.json()
+                
+                this.game_id = game_id
+                this.onGameDataReceived(json)
+
                 return json
             }
             
@@ -150,6 +163,13 @@
                 })
             }
             
+            bindGamesListItemClicked(handler) {
+                this.current_games_list.addEventListener('click', e => {
+                    let game_id = e.target.textContent
+                    handler(game_id)
+                })
+            }
+            
             bindNewGameClick(handler) {
                 this.new_game_button.addEventListener('click', e => {
                     handler()
@@ -184,6 +204,7 @@
                 this.view.bindNewGameClick(this.handleNewGameClick)
                 this.view.bindBoardClick(this.handleBoardClick)
                 this.view.bindBoardContextMenu(this.handleContextMenu)
+                this.view.bindGamesListItemClicked(this.handleGamesListItemClicked)
                 
                 this.model.startNewGame()
             }
@@ -195,6 +216,10 @@
             
             handleGamesListReceived = current_games_ids => {
                 this.view.refreshGamesList(current_games_ids)
+            }
+            
+            handleGamesListItemClicked = game_id => {
+                this.model.getGameBoard(game_id)
             }
             
             handleNewGameClick = () => {
