@@ -77,7 +77,8 @@ def toggle_flag():
     return jsonify(response)
     
 if __name__ == '__main__':
-    app.run(port='8000')
+    #~ app.run(port=8000)
+    app.run(host='192.168.1.14', port=5010)
     
     
     
