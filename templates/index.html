@@ -46,6 +46,7 @@
                 minesweeper in <span class="silver_text">Flask</span>
             </p>
             <button id="new_game_button">New game</button>
+            <ul id="current_games_list"></ul>
             <div id="board_container">
                 <table id="board"></table>
             </div>
@@ -64,6 +65,7 @@
                 
                 this.game_id = json.game_id
                 this.onGameDataReceived(json)
+                this.onGamesListReceived(json.current_games_ids)
                 
                 return json
             }
@@ -99,12 +101,17 @@
             bindGameDataReceived(callback) {
                 this.onGameDataReceived = callback
             }
+            
+            bindGamesListReceived(callback) {
+                this.onGamesListReceived = callback
+            }
         }
         
         class View {
             constructor() {
                 this.board = document.getElementById('board')
                 this.new_game_button = document.getElementById('new_game_button')
+                this.current_games_list = document.getElementById('current_games_list')
             }
             
             drawBoard(board, cell_click_handler) {
@@ -129,6 +136,17 @@
                         tr.appendChild(td)
                     })
                     this.board.appendChild(tr)
+                })
+            }
+            
+            refreshGamesList(current_games_ids) {
+                
+                this.current_games_list.innerHTML = ''
+                
+                current_games_ids.forEach(game_id => {
+                    let li = document.createElement('li')
+                    li.textContent = game_id
+                    this.current_games_list.appendChild(li)
                 })
             }
             
@@ -162,6 +180,7 @@
                 this.view = view
                 
                 this.model.bindGameDataReceived(this.handleGameDataReceived)
+                this.model.bindGamesListReceived(this.handleGamesListReceived)
                 this.view.bindNewGameClick(this.handleNewGameClick)
                 this.view.bindBoardClick(this.handleBoardClick)
                 this.view.bindBoardContextMenu(this.handleContextMenu)
@@ -170,8 +189,13 @@
             }
             
             handleGameDataReceived = game_data => {
+                //~ this.view.refreshGamesList(game_data.current_games_ids)
                 this.view.drawBoard(game_data.board)
             }      
+            
+            handleGamesListReceived = current_games_ids => {
+                this.view.refreshGamesList(current_games_ids)
+            }
             
             handleNewGameClick = () => {
                 this.model.startNewGame()

@@ -25,6 +25,10 @@ def start_new_game():
     print('CURRENT GAMES', len(game_manager.games))
     
     response = {
+        'current_games_ids': [
+            game_id 
+            for game_id, game in game_manager.games.items()
+        ],
         'game_id': game.id_,
         'board': game.board.to_dict(),
     }
