@@ -43,7 +43,6 @@ class Game:
         
     def check_score(self):
         if self.score == self.settings.n_mines:
-            #~ self.end('You won!')
             self.status = 'won'
         
     def place_mine_randomly(self):
@@ -85,10 +84,8 @@ class Game:
     def reveal_cell_area(self, cell):
         if not cell.flagged:
             if cell.mined:
-                #~ self.end('You stepped on a mine!')
                 self.status = 'lost'
-                for cell in self.board:
-                    cell.hidden = False
+                self.reveal_all_cells()
             else:
                 cell.hidden = False
                 
@@ -103,9 +100,10 @@ class Game:
                         adjacent_cell = self.board[row][col]
                         if cell.value == 0 and adjacent_cell.hidden and not adjacent_cell.mined:
                             self.reveal_cell_area(adjacent_cell)
-       
-    def end(self, message):
-        print(message)      
+    
+    def reveal_all_cells(self):
+        for cell in self.board:
+            cell.hidden = False
 
 class Cell:
     def __init__(self, row, col):
