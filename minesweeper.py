@@ -76,6 +76,8 @@ class Game:
             
         if cell.flagged:
             cell.flagged = False
+            if cell.mined:
+                self.score -= 1
         else:
             cell.flagged = True
             if cell.mined:
@@ -131,14 +133,11 @@ class Cell:
         self.mined = True
         
     def symbol(self):
-        if self.hidden:
-            if not self.flagged:
-                s = ''
-            else:
-                s = 'x'
+        if self.hidden and not self.flagged:
+            s = ''
         if not self.hidden:
-            if self.value == 0:
-                s = ' '
+            if self.value == 0 and not self.mined:
+                s = ''
             elif self.mined:
                 s = 'M'
             else:
