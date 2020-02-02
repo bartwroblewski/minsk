@@ -20,25 +20,24 @@ game_manager = GameManager()
 
 @app.route('/')
 def index(): 
-	session['id'] = uuid.uuid4()
+	session['id'] = str(uuid.uuid4())
 	return render_template('index.html')
 
 @app.route('/start_new_game')
 def start_new_game():
-    game_id = uuid.uuid4()
-    game = Game(id_=game_id)
+    game = Game()
     
-    game_manager.register_game(game)
+    game_id = game_manager.register_game(game, session)
     game_manager.unregister_old_games()
     
     print('CURRENT GAMES', len(game_manager.games))
     
     response = {
         'current_games_ids': [
-            game_id 
-            for game_id, game in sorted(game_manager.games.items()) 
+            k 
+            for k, v in game_manager.games.items()
         ],
-        'game_id': game.id_,
+        'game_id': game_id,
         'board': game.board.to_dict(),
     }
     return jsonify(response)
