@@ -45,7 +45,7 @@ def start_new_game():
 @app.route('/get_games_state')
 def get_games_state():
     current_game_id = request.args.get('game_id')
-    current_game = game_manager.get_game(game_id)
+    current_game = game_manager.get_game(current_game_id)
     
     response = {
         'board': current_game.board.to_dict(),

@@ -76,7 +76,7 @@
             }
             
             async getGamesState(game_id) {
-                const url = new URL("{{url_for('get_games_state', external=True)}}")
+                const url = new URL("{{url_for('get_games_state', _external=True)}}")
                 const params = new URLSearchParams({'game_id': game_id})
                 url.search = params
                 const response = await fetch(url)
@@ -215,7 +215,7 @@
                 this.view.bindGamesListItemClicked(this.handleGamesListItemClicked)
                 
                 this.model.startNewGame()
-                //this.pollBoardChanges()
+                this.pollBoardChanges()
             }
             
             pollBoardChanges = () => {
