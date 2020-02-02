@@ -1,1 +1,1 @@
-web: gunicorn app:minsk
+web: gunicorn minsk:app
