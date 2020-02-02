@@ -42,13 +42,17 @@ def start_new_game():
     }
     return jsonify(response)
     
-@app.route('/get_game_board')
-def get_game_board():
-    game_id = request.args.get('game_id')
-    game = game_manager.get_game(game_id)
+@app.route('/get_games_status')
+def get_games_status():
+    current_game_id = request.args.get('game_id')
+    current_game = game_manager.get_game(game_id)
     
     response = {
-        'board': game.board.to_dict(),
+        'board': current_game.board.to_dict(),
+        'current_games': [
+			game_id 
+			for game_id, v in game_manager.games.items()
+		]
     }
     return jsonify(response)
     
