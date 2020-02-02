@@ -152,7 +152,6 @@
                         td.textContent = cell.symbol
                         if (cell.hidden) {
                             td.classList.add('grey')
-                            //~ if (!cell.flagged) td.textContent = ''
                         }
                         td.id = cell.col
                         tr.appendChild(td)
@@ -160,8 +159,6 @@
                     this.board.appendChild(tr)
                 })
             }
-            
-            assignCellSymbol(cell) {}
             
             refreshGamesList(current_games_ids) {
                 
@@ -183,6 +180,7 @@
             
             bindNewGameClick(handler) {
                 this.new_game_button.addEventListener('click', e => {
+					this.game_status.textContent = ''
                     handler()
                 })
             }

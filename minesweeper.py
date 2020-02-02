@@ -15,7 +15,7 @@ class GameSettings:
         self.n_mines = int(round(
             self.n_rows * self.n_cols / self.mines_ratio
         ))
-        self.n_mines = 2
+        #~ self.n_mines = 2
 
 class GameManager:
     def __init__(self):
