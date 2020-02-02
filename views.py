@@ -25,18 +25,15 @@ def index():
 
 @app.route('/start_new_game')
 def start_new_game():
-    game = Game()
-    
+    game = Game()   
     game_id = game_manager.register_game(game, session)
     game_manager.unregister_old_games()
     
-    print('CURRENT GAMES', len(game_manager.games))
-    
     response = {
-        'current_games_ids': [
-            k 
-            for k, v in game_manager.games.items()
-        ],
+        #~ 'current_games_ids': [
+            #~ k 
+            #~ for k, v in game_manager.games.items()
+        #~ ],
         'game_id': game_id,
         'board': game.board.to_dict(),
     }
@@ -48,17 +45,19 @@ def get_games_state():
     current_game = game_manager.get_game(current_game_id)
     
     response = {
-        'board': current_game.board.to_dict(),
         'current_games': [
-			game_id 
-			for game_id, v in game_manager.games.items()
-		]
+            game_id 
+            for game_id, v in game_manager.games.items()
+        ]
     }
+    
+    if current_game:
+        response['board'] = current_game.board.to_dict()
+        
     return jsonify(response)
     
 @app.route('/reveal_cell_area')
 def reveal_cell_area():
-    print(game_manager.games)
     game_id = request.args.get('game_id')
     game = game_manager.get_game(game_id)
     
@@ -73,7 +72,7 @@ def reveal_cell_area():
        
     response = {
         'board': game.board.to_dict(),
-        'game_status': game.end_status,
+        'end_status': game.end_status,
     }
     return jsonify(response)
     
@@ -92,7 +91,7 @@ def toggle_flag():
     
     response = {
         'board': game.board.to_dict(),
-        'game_status': game.end_status,
+        'end_status': game.end_status,
     }
     return jsonify(response)
     

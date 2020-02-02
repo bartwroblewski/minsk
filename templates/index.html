@@ -14,7 +14,7 @@
                    // letter-spacing: 1px;
                 }
                 
-                #game_status {
+                #end_status {
 					color: red;
 				}
                 td {
@@ -49,7 +49,7 @@
                 minesweeper in <span class="silver_text">Flask</span>
             </p>
             <button id="new_game_button">New game</button>
-            <div id="game_status"></div>
+            <div id="end_status"></div>
             <div id="board_container">
                 <table id="board"></table>
             </div>
@@ -70,7 +70,7 @@
                 
                 this.game_id = json.game_id
                 this.onGameDataReceived(json)
-                this.onGamesListReceived(json.current_games_ids)
+                //this.onGamesListReceived(json.current_games_ids)
                 
                 return json
             }
@@ -84,6 +84,7 @@
                 
                 this.game_id = game_id
                 this.onGameDataReceived(json)
+                this.onGamesListReceived(json.current_games)
 
                 return json
             }
@@ -132,7 +133,7 @@
                 this.board = document.getElementById('board')
                 this.new_game_button = document.getElementById('new_game_button')
                 this.current_games_list = document.getElementById('current_games_list')
-                this.game_status = document.getElementById('game_status')
+                this.end_status = document.getElementById('end_status')
             }
             
             drawBoard(board, cell_click_handler) {
@@ -179,7 +180,7 @@
             
             bindNewGameClick(handler) {
                 this.new_game_button.addEventListener('click', e => {
-					this.game_status.textContent = ''
+					this.end_status.textContent = ''
                     handler()
                 })
             }
@@ -215,10 +216,10 @@
                 this.view.bindGamesListItemClicked(this.handleGamesListItemClicked)
                 
                 this.model.startNewGame()
-                this.pollBoardChanges()
+                this.pollGamesState()
             }
             
-            pollBoardChanges = () => {
+            pollGamesState = () => {
                 let interval = setInterval(() => {
                     console.log('polling')
                     this.model.getGamesState(this.model.game_id)
@@ -226,14 +227,17 @@
             }
             
             handleGameDataReceived = game_data => {
-				if (game_data.game_status) {
-					this.view.game_status.textContent = game_data.game_status
+				if (game_data.end_status) {
+					this.view.end_status.textContent = game_data.end_status
 				}
                 //~ this.view.refreshGamesList(game_data.current_games_ids)
-                this.view.drawBoard(game_data.board)
+                if (game_data.board) {
+					this.view.drawBoard(game_data.board)
+				}
             }      
             
             handleGamesListReceived = current_games_ids => {
+				console.log('current games:', current_games_ids)
                 this.view.refreshGamesList(current_games_ids)
             }
             

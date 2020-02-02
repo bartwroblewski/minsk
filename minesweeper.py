@@ -37,7 +37,9 @@ class GameManager:
         del self.games[game_id]
         
     def get_game(self, game_id):
-        return self.games[game_id]['game']
+        game = self.games.get(game_id)
+        if game:
+            return game['game']
         
     def unregister_old_games(self):
         d = {}
