@@ -1,4 +1,5 @@
 import uuid
+import datetime
 
 from flask import (
     Flask, 
@@ -22,14 +23,16 @@ def index():
 def start_new_game():
     game_id = str(uuid.uuid4())
     game = Game(id_=game_id)
+    
     game_manager.register_game(game)
+    game_manager.unregister_old_games()
     
     print('CURRENT GAMES', len(game_manager.games))
     
     response = {
         'current_games_ids': [
             game_id 
-            for game_id, game in game_manager.games.items()
+            for game_id, game in sorted(game_manager.games.items()) 
         ],
         'game_id': game.id_,
         'board': game.board.to_dict(),

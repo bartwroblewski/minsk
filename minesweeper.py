@@ -1,4 +1,5 @@
 import random
+import datetime
 
 class NotEnoughBoardCellsError(Exception):
     def __init__(self, n_mines, n_cells):
@@ -20,16 +21,30 @@ class GameSettings:
 class GameManager:
     def __init__(self):
         self.games = {}
+        self.game_timeout = 0.1
         
     def register_game(self, game):
         self.games[game.id_] = game
         
+    def unregister_game(self, game):
+        del self.games[game.id_]
+        
     def get_game(self, game_id):
         return self.games[game_id]
+        
+    def unregister_old_games(self):
+        d = {}
+        for game_id, game in self.games.items():
+            timedelta = datetime.datetime.now() - game.created_at
+            timedelta_in_minutes = timedelta.total_seconds() / 60            
+            if timedelta_in_minutes < self.game_timeout:
+                d[game_id] = game
+        self.games = d
 
 class Game:
     def __init__(self, id_):
         self.id_ = id_
+        self.created_at = datetime.datetime.now()
         self.status = None
         self.settings = GameSettings()
         self.board = Board(
