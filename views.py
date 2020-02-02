@@ -55,7 +55,7 @@ def reveal_cell_area():
     cell = game.board[row][col]
 
     game.reveal_cell_area(cell)
-    
+       
     response = {
         'board': game.board.to_dict(),
     }
@@ -77,8 +77,8 @@ def toggle_flag():
     return jsonify(response)
     
 if __name__ == '__main__':
-    #~ app.run(port=8000)
-    app.run(host='192.168.1.14', port=5010)
+    app.run(port=8000)
+    #~ app.run(host='192.168.1.14', port=5010)
     
     
     

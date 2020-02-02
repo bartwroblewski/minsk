@@ -29,6 +29,7 @@ class GameManager:
 class Game:
     def __init__(self, id_):
         self.id_ = id_
+        self.status = None
         self.settings = GameSettings()
         self.board = Board(
             self.settings.n_rows, 
@@ -42,7 +43,8 @@ class Game:
         
     def check_score(self):
         if self.score == self.settings.n_mines:
-            self.end('You won!')
+            #~ self.end('You won!')
+            self.status = 'won'
         
     def place_mine_randomly(self):
         random_cell = self.board.get_random_cell()
@@ -82,7 +84,10 @@ class Game:
             
     def reveal_cell_area(self, cell):
         if cell.mined:
-            self.end('You stepped on a mine!')
+            #~ self.end('You stepped on a mine!')
+            self.status = 'lost'
+            for cell in self.board:
+                cell.hidden = False
         else:
             cell.hidden = False
             
@@ -131,10 +136,10 @@ class Cell:
         if not self.hidden:
             if self.value == 0:
                 s = ' '
+            elif self.mined:
+                s = 'm'
             else:
-                s = self.value
-        # if self.mined:
-            # s = 'm'
+                s = self.value    
         if self.flagged:
             s = '?'
         return s
