@@ -17,12 +17,12 @@ class GameSettings:
         self.n_mines = int(round(
             self.n_rows * self.n_cols / self.mines_ratio
         ))
-        #~ self.n_mines = 2
+        self.n_mines = 2
 
 class GameManager:
     def __init__(self):
         self.games = {}
-        self.game_timeout = 0.1
+        self.game_timeout = 2
         
     def register_game(self, game, session):
         game_id = str(uuid.uuid4())
@@ -33,8 +33,8 @@ class GameManager:
         }
         return game_id
         
-    def unregister_game(self, game):
-        del self.games[game.id_]
+    def unregister_game(self, game_id):
+        del self.games[game_id]
         
     def get_game(self, game_id):
         return self.games[game_id]['game']

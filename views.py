@@ -20,8 +20,8 @@ game_manager = GameManager()
 
 @app.route('/')
 def index(): 
-	session['id'] = str(uuid.uuid4())
-	return render_template('index.html')
+    session['id'] = str(uuid.uuid4())
+    return render_template('index.html')
 
 @app.route('/start_new_game')
 def start_new_game():
@@ -63,6 +63,9 @@ def reveal_cell_area():
     cell = game.board[row][col]
 
     game.reveal_cell_area(cell)
+    
+    if game.status:
+        game_manager.unregister_game(game_id)
        
     response = {
         'board': game.board.to_dict(),
@@ -79,6 +82,9 @@ def toggle_flag():
     col = int(request.args.get('col'))
 
     game.toggle_flag(row, col)
+    
+    if game.status:
+        game_manager.unregister_game(game_id)
     
     response = {
         'board': game.board.to_dict(),
