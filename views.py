@@ -42,8 +42,8 @@ def start_new_game():
     }
     return jsonify(response)
     
-@app.route('/get_games_status')
-def get_games_status():
+@app.route('/get_games_state')
+def get_games_state():
     current_game_id = request.args.get('game_id')
     current_game = game_manager.get_game(game_id)
     
@@ -68,12 +68,12 @@ def reveal_cell_area():
 
     game.reveal_cell_area(cell)
     
-    if game.status:
+    if game.end_status:
         game_manager.unregister_game(game_id)
        
     response = {
         'board': game.board.to_dict(),
-        'game_status': game.status,
+        'game_status': game.end_status,
     }
     return jsonify(response)
     
@@ -87,12 +87,12 @@ def toggle_flag():
 
     game.toggle_flag(row, col)
     
-    if game.status:
+    if game.end_status:
         game_manager.unregister_game(game_id)
     
     response = {
         'board': game.board.to_dict(),
-        'game_status': game.status,
+        'game_status': game.end_status,
     }
     return jsonify(response)
     

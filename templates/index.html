@@ -75,8 +75,8 @@
                 return json
             }
             
-            async getGamesStatus(game_id) {
-                const url = new URL("{{url_for('get_games_status', external=True)}}")
+            async getGamesState(game_id) {
+                const url = new URL("{{url_for('get_games_state', external=True)}}")
                 const params = new URLSearchParams({'game_id': game_id})
                 url.search = params
                 const response = await fetch(url)
@@ -221,7 +221,7 @@
             pollBoardChanges = () => {
                 let interval = setInterval(() => {
                     console.log('polling')
-                    this.model.getGamesStatus(this.model.game_id)
+                    this.model.getGamesState(this.model.game_id)
                 }, 1000)
             }
             
@@ -238,7 +238,7 @@
             }
             
             handleGamesListItemClicked = game_id => {
-                this.model.getGamesStatus(game_id)
+                this.model.getGamesState(game_id)
             }
             
             handleNewGameClick = () => {

@@ -54,7 +54,7 @@ class GameManager:
 
 class Game:
     def __init__(self):
-        self.status = None
+        self.end_status = None
         self.settings = GameSettings()
         self.board = Board(
             self.settings.n_rows, 
@@ -68,7 +68,7 @@ class Game:
         
     def check_score(self):
         if self.score == self.settings.n_mines:
-            self.status = 'won'
+            self.end_status = 'won'
         
     def place_mine_randomly(self):
         random_cell = self.board.get_random_cell()
@@ -111,7 +111,7 @@ class Game:
     def reveal_cell_area(self, cell):
         if not cell.flagged:
             if cell.mined:
-                self.status = 'lost'
+                self.end_status = 'lost'
                 self.reveal_all_cells()
             else:
                 cell.hidden = False
