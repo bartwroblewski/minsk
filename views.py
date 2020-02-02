@@ -5,7 +5,8 @@ from flask import (
     render_template, 
     Response, 
     jsonify,
-    request
+    request,
+    url_for
 )
 from minesweeper import Game, GameManager
 
@@ -14,7 +15,8 @@ game_manager = GameManager()
 
 @app.route('/')
 def index(): 
-    return render_template('index.html')
+	print(url_for('get_game_board', _external=True))
+	return render_template('index.html')
 
 @app.route('/start_new_game')
 def start_new_game():
@@ -82,7 +84,7 @@ if __name__ == '__main__':
     app.run(port=8000)
     #~ app.run(host='192.168.1.14', port=5010)
     
-    
+
     
     
     
