@@ -23,7 +23,7 @@ class GameManager:
         self.games = {}
         self.game_timeout = 0.1
         
-    def register_game(self, game):
+    def register_game(self, game, session):
         self.games[game.id_] = game
         
     def unregister_game(self, game):

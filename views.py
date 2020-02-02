@@ -1,5 +1,6 @@
 import uuid
 import datetime
+import os
 
 from flask import (
     Flask, 
@@ -7,21 +8,24 @@ from flask import (
     Response, 
     jsonify,
     request,
-    url_for
+    session,
 )
+
 from minesweeper import Game, GameManager
 
 app = Flask(__name__)
+app.secret_key = os.environ['SECRET_KEY']
+
 game_manager = GameManager()
 
 @app.route('/')
 def index(): 
-	print(url_for('get_game_board', _external=True))
+	session['id'] = uuid.uuid4()
 	return render_template('index.html')
 
 @app.route('/start_new_game')
 def start_new_game():
-    game_id = str(uuid.uuid4())
+    game_id = uuid.uuid4()
     game = Game(id_=game_id)
     
     game_manager.register_game(game)
