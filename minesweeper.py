@@ -134,17 +134,16 @@ class Cell:
         
     def symbol(self):
         if self.hidden and not self.flagged:
-            s = ''
-        if not self.hidden:
+            return ''
+        elif not self.hidden:
             if self.value == 0 and not self.mined:
-                s = ''
+                return ''
             elif self.mined:
-                s = 'M'
+                return 'M'
             else:
-                s = self.value    
-        if self.flagged:
-            s = 'F'
-        return s
+                return self.value    
+        else:
+            return 'F'
         
     def to_dict(self):
         d = {
