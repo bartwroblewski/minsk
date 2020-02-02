@@ -83,25 +83,26 @@ class Game:
             self.check_score()
             
     def reveal_cell_area(self, cell):
-        if cell.mined:
-            #~ self.end('You stepped on a mine!')
-            self.status = 'lost'
-            for cell in self.board:
+        if not cell.flagged:
+            if cell.mined:
+                #~ self.end('You stepped on a mine!')
+                self.status = 'lost'
+                for cell in self.board:
+                    cell.hidden = False
+            else:
                 cell.hidden = False
-        else:
-            cell.hidden = False
-            
-            adjacent = (
-                (cell.row - 1, cell.col),
-                (cell.row, cell.col + 1),
-                (cell.row + 1, cell.col),
-                (cell.row, cell.col - 1),
-            )
-            for row, col in adjacent:
-                if self.board.contains(row, col):
-                    adjacent_cell = self.board[row][col]
-                    if cell.value == 0 and adjacent_cell.hidden and not adjacent_cell.mined:
-                        self.reveal_cell_area(adjacent_cell)
+                
+                adjacent = (
+                    (cell.row - 1, cell.col),
+                    (cell.row, cell.col + 1),
+                    (cell.row + 1, cell.col),
+                    (cell.row, cell.col - 1),
+                )
+                for row, col in adjacent:
+                    if self.board.contains(row, col):
+                        adjacent_cell = self.board[row][col]
+                        if cell.value == 0 and adjacent_cell.hidden and not adjacent_cell.mined:
+                            self.reveal_cell_area(adjacent_cell)
        
     def end(self, message):
         print(message)      
@@ -132,7 +133,10 @@ class Cell:
         
     def symbol(self):
         if self.hidden:
-            s = 'x'
+            if not self.flagged:
+                s = ''
+            else:
+                s = 'x'
         if not self.hidden:
             if self.value == 0:
                 s = ' '
