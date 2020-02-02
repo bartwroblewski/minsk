@@ -15,6 +15,7 @@ class GameSettings:
         self.n_mines = int(round(
             self.n_rows * self.n_cols / self.mines_ratio
         ))
+        self.n_mines = 2
 
 class GameManager:
     def __init__(self):
@@ -139,11 +140,11 @@ class Cell:
             if self.value == 0:
                 s = ' '
             elif self.mined:
-                s = 'm'
+                s = 'M'
             else:
                 s = self.value    
         if self.flagged:
-            s = '?'
+            s = 'F'
         return s
         
     def to_dict(self):

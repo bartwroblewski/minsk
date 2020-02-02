@@ -58,6 +58,7 @@ def reveal_cell_area():
        
     response = {
         'board': game.board.to_dict(),
+        'game_status': game.status,
     }
     return jsonify(response)
     
@@ -73,6 +74,7 @@ def toggle_flag():
     
     response = {
         'board': game.board.to_dict(),
+        'game_status': game.status,
     }
     return jsonify(response)
     

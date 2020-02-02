@@ -13,7 +13,9 @@
                 #logo {
                    // letter-spacing: 1px;
                 }
-                
+                #game_status {
+					color: red;
+				}
                 td {
                     border: 1px solid black;
                     width: 15px;
@@ -46,6 +48,7 @@
                 minesweeper in <span class="silver_text">Flask</span>
             </p>
             <button id="new_game_button">New game</button>
+            <div id="game_status"></div>
             <div id="board_container">
                 <table id="board"></table>
             </div>
@@ -130,6 +133,7 @@
                 this.board = document.getElementById('board')
                 this.new_game_button = document.getElementById('new_game_button')
                 this.current_games_list = document.getElementById('current_games_list')
+                this.game_status = document.getElementById('game_status')
             }
             
             drawBoard(board, cell_click_handler) {
@@ -225,6 +229,10 @@
             }
             
             handleGameDataReceived = game_data => {
+				console.log(game_data)
+				if (game_data.game_status) {
+					this.view.game_status.textContent = game_data.game_status
+				}
                 //~ this.view.refreshGamesList(game_data.current_games_ids)
                 this.view.drawBoard(game_data.board)
             }      
