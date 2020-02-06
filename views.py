@@ -38,7 +38,7 @@ def get_game_board():
 	game = games_manager.get_game(game_id)
 	response = {
 		'board': game.board.to_dict(),
-		#~ 'end_status': game.end_status,
+		'end_status': game.end_status,
 	}
 	return jsonify(response)
     
