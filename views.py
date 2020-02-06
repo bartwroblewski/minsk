@@ -36,10 +36,6 @@ def start_new_game():
 def get_game_board():
 	game_id = request.args.get('game_id')
 	game = games_manager.get_game(game_id)
-	
-	if game.end_status:
-        games_manager.unregister_game(game_id)
-        
 	response = {
 		'board': game.board.to_dict(),
 		'end_status': game.end_status,
@@ -75,8 +71,8 @@ def move():
     if move_name == 'toggle_flag':
         game.toggle_flag(row, col)
     
-    #~ if game.end_status:
-        #~ games_manager.unregister_game(game_id)
+    if game.end_status:
+        games_manager.unregister_game(game_id)
         
     response = {
         'board': game.board.to_dict(),
