@@ -75,14 +75,13 @@
                 return json
             }
             
-            async getGameBoard(game_id) {
+            async getGameBoard() {
                 const url = new URL("{{url_for('get_game_board', _external=True)}}")
-                const params = new URLSearchParams({'game_id': game_id})
+                const params = new URLSearchParams({'game_id': this.game_id})
                 url.search = params
                 const response = await fetch(url)
                 const json = await response.json()
                 
-                this.game_id = game_id
                 this.onGameDataReceived(json)
 
                 return json
@@ -215,13 +214,6 @@
                 this.pollCurrentGames()
             }
             
-            pollGamesState = () => {
-                let interval = setInterval(() => {
-                    console.log('polling')
-                    this.model.getGamesState(this.model.game_id)
-                }, 1000)
-            }
-            
             pollCurrentGames = () => {
                 let interval = setInterval(() => {
                     console.log('polling current games')
@@ -232,7 +224,7 @@
             pollGameBoard = () => {
 				let interval = setInterval(() => {
                     console.log('polling game board')
-                    this.model.getGameBoard(this.model.game_id)
+                    this.model.getGameBoard()
                 }, 1000)
 			}
                        
