@@ -36,7 +36,10 @@ def start_new_game():
 def get_game_board():
 	game_id = request.args.get('game_id')
 	game = games_manager.get_game(game_id)
-	response = {'board': game.board.to_dict()}
+	response = {
+		'board': game.board.to_dict(),
+		#~ 'end_status': game.end_status,
+	}
 	return jsonify(response)
     
 @app.route('/get_current_games')
