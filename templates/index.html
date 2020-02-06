@@ -1,9 +1,7 @@
 <!DOCTYPE html>
     <html>
         <head>
-<!--
-            <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
--->
+			<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
             <style>
                 body {
                     background: rgb(100, 100, 100);
@@ -61,59 +59,6 @@
             constructor() {
                 this.game_id = ''
             }
-               
-             async startNewGame() {
-                const url = "{{url_for('start_new_game')}}"
-                console.log(url)
-                const response = await fetch(url)
-                const json = await response.json()
-                
-                this.game_id = json.game_id
-                this.onGameDataReceived(json)
-                //this.onGamesListReceived(json.current_games_ids)
-                
-                return json
-            }
-            
-            async getGameBoard(game_id) {
-                const url = new URL("{{url_for('get_game_board', _external=True)}}")
-                const params = new URLSearchParams({'game_id': game_id || this.game_id})
-                url.search = params
-                const response = await fetch(url)
-                const json = await response.json()
-                
-                if (game_id) {
-					this.game_id = game_id
-				}
-                this.onGameDataReceived(json)
-
-                return json
-            }
-            
-            async getCurrentGames() {
-                const url = new URL("{{url_for('get_current_games', _external=True)}}")
-                const response = await fetch(url)
-                const json = await response.json()
-                
-                this.onCurrentGamesReceived(json.current_games)
-
-                return json
-            }
-            
-            async move(row, col, move_name) {
-                const url = new URL("{{url_for('move', _external=True)}}")
-                const params = new URLSearchParams({
-                    'row': row,
-                    'col': col,
-                    'move_name': move_name,
-                    'game_id': this.game_id,                
-                })
-                url.search = params
-                const response = await fetch(url)
-                const json = await response.json()
-                this.onGameDataReceived(json)
-                return json
-            }
             
             bindGameDataReceived(callback) {
                 this.onGameDataReceived = callback
@@ -157,15 +102,15 @@
             }
             
             refreshGamesList(current_games) {
-                console.log('REFRESHONG', current_games)
-                this.current_games_list.innerHTML = ''
+                console.log('REFRESHiNG GAMES LIST', current_games)
+                //~ this.current_games_list.innerHTML = ''
                 
-                current_games.forEach(game => {
-                    let li = document.createElement('li')
-                    li.id = game.id
-                    li.textContent = `Started ${game.started_ago} minutes ago, completed in ${game.completion}%`
-                    this.current_games_list.appendChild(li)
-                })
+                //~ current_games.forEach(game => {
+                    //~ let li = document.createElement('li')
+                    //~ li.id = game.id
+                    //~ li.textContent = `Started ${game.started_ago} minutes ago, completed in ${game.completion}%`
+                    //~ this.current_games_list.appendChild(li)
+                //~ })
             }
             
             bindGamesListItemClicked(handler) {
@@ -183,7 +128,7 @@
                 })
             }
             
-            bindBoardClick(handler) {
+            bindBoardClick(handler) {	
                 this.board.addEventListener('click', e => {
                     let row = e.target.parentElement.rowIndex
                     let col = e.target.id
@@ -202,9 +147,10 @@
         }
         
         class Controller {
-            constructor(model, view) {
+            constructor(model, view, socket) {
                 this.model = model
                 this.view = view
+                this.socket = socket
                 
                 this.model.bindGameDataReceived(this.handleGameDataReceived)
                 this.model.bindGamesListReceived(this.handleCurrentGamesReceived)
@@ -213,9 +159,32 @@
                 this.view.bindBoardContextMenu(this.handleContextMenu)
                 this.view.bindGamesListItemClicked(this.handleGamesListItemClicked)
                 
-                this.model.startNewGame()
-                this.pollGameBoard()
-                this.pollCurrentGames()
+                //this.model.startNewGame()
+                //this.pollGameBoard()
+                //this.pollCurrentGames()
+                
+                this.socket.emit('start_new_game')
+                
+                this.socket.on('new_game_started', (response) => {
+					this.model.game_id = response['game_id']
+					this.view.drawBoard(response['board'])
+					this.view.refreshGamesList(response['games_list'])
+					this.socket.emit('refresh_games_list')
+				})
+				
+				this.socket.on('games_list_refreshed', (response) => {
+					this.view.refreshGamesList(response['games_list'])
+				})
+					
+                this.socket.on('board_changed', (response) => {
+					if (this.model.game_id === response['game_id']) {
+						app.view.drawBoard(response['board'])
+					}
+					if (response.end_status) {
+						this.view.end_status.textContent = response.end_status
+					}	
+				})
+				
             }
             
             pollCurrentGames = () => {
@@ -252,7 +221,8 @@
             }
             
             handleNewGameClick = () => {
-                this.model.startNewGame()
+                //~ this.model.startNewGame()
+                this.socket.emit('start_new_game')
             }
             
             handleBoardClick = (row, col) => {
@@ -264,14 +234,32 @@
             }
             
             revealCellArea = async (row, col) => {
-                let board = await this.model.move(row, col, 'reveal_cell_area')
+                //~ let board = await this.model.move(row, col, 'reveal_cell_area')
+                socket.emit('board_move', {
+					row: row,
+					col: col,
+					game_id: this.model.game_id,
+					move_name: 'reveal_cell_area',
+				})
             }
             
             toggleFlag = async (row, col) => {
-                let board = await this.model.move(row, col, 'toggle_flag')
+                //~ let board = await this.model.move(row, col, 'toggle_flag')
+                socket.emit('board_move', {
+					row: row,
+					col: col,
+					game_id: this.model.game_id,
+					move_name: 'toggle_flag',
+				})
             }
         }
         
-        let app = new Controller(new Model(), new View())
+        socket = io()
+        socket.on('connect', () => {
+			socket.emit('my event', {data: 'Im connected!'})
+		})
+		let app = new Controller(new Model(), new View(), socket)
+		
+		
         </script>
     </html>
