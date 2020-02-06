@@ -84,6 +84,7 @@ def handle_switch_game(data):
 	game_id = data['game_id']
 	game = games_manager.get_game(game_id)
 	response = {
+		'game_id': game_id,
 		'board': game.board.to_dict(),
 	}
 	emit('game_switched', response)
