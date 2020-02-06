@@ -211,7 +211,7 @@
                 this.view.bindGamesListItemClicked(this.handleGamesListItemClicked)
                 
                 this.model.startNewGame()
-                //this.pollGamesState()
+                this.pollGameBoard()
                 this.pollCurrentGames()
             }
             
@@ -228,6 +228,13 @@
                     this.model.getCurrentGames()
                 }, 1000)
             }
+            
+            pollGameBoard = () => {
+				let interval = setInterval(() => {
+                    console.log('polling game board')
+                    this.model.getGameBoard(this.model.game_id)
+                }, 1000)
+			}
                        
             handleGameDataReceived = game_data => {
 				if (game_data.end_status) {
