@@ -17,19 +17,19 @@ class GameSettings:
         self.n_mines = int(round(
             self.n_rows * self.n_cols / self.mines_ratio
         ))
-        self.n_mines = 2
+        self.n_mines = 4
 
-class GameManager:
+class GamesManager:
     def __init__(self):
         self.games = {}
-        self.game_timeout = 2
+        self.game_expiration = 120 # in seconds
         
-    def register_game(self, game, session):
+    def register_game(self, game):
         game_id = str(uuid.uuid4())
+        game_creation_date = datetime.datetime.now()
         self.games[game_id] = {
             'game': game,
-            'session': session,
-            'created_at': datetime.datetime.now(),
+            'game_creation_date': game_creation_date,
         }
         return game_id
         
@@ -39,39 +39,49 @@ class GameManager:
     def get_game(self, game_id):
         game = self.games.get(game_id)
         if game:
+            # reset game expiration
+            game['game_creation_date'] = datetime.datetime.now()
             return game['game']
-        
-    def unregister_old_games(self):
+                    
+    def get_current_games(self):
         d = {}
         for k, v in self.games.items():
-            game = self.games[k]['game']
-            game_creation_date = self.games[k]['created_at']
-            
-            timedelta = datetime.datetime.now() - game_creation_date
-            timedelta_in_minutes = timedelta.total_seconds() / 60 
-                       
-            if timedelta_in_minutes < self.game_timeout:
+            game_creation_date = self.games[k]['game_creation_date']
+            delta = (datetime.datetime.now() - game_creation_date)
+            if not delta.total_seconds() > self.game_expiration:
                 d[k] = v
-        self.games = d
+            else:
+                game = self.games[k]['game']
+                game.end_status = "expired"
+                #self.unregister_game(k)
+        return d
+       
 
 class Game:
-    def __init__(self):
-        self.end_status = None
+    def __init__(self):      
+        self.created_at = datetime.datetime.now()
+        self.id_ = str(uuid.uuid4())
         self.settings = GameSettings()
         self.board = Board(
             self.settings.n_rows, 
             self.settings.n_cols,
         )
         
+        self.end_status = None
+        self.revealed_cells = []
+        self.score = 0
+        
         self.place_mines_randomly()
         self.update_neighbours()
-        
-        self.score = 0
         
     def check_score(self):
         if self.score == self.settings.n_mines:
             self.end_status = 'won'
-        
+            self.reveal_all_cells()
+            
+    def completion(self):   
+        return (self.score / self.settings.n_mines) * 100 
+                
     def place_mine_randomly(self):
         random_cell = self.board.get_random_cell()
         if random_cell.mined:
@@ -117,6 +127,7 @@ class Game:
                 self.reveal_all_cells()
             else:
                 cell.hidden = False
+                self.revealed_cells.append(cell)
                 
                 adjacent = (
                     (cell.row - 1, cell.col),
@@ -129,9 +140,15 @@ class Game:
                         adjacent_cell = self.board[row][col]
                         if cell.value == 0 and adjacent_cell.hidden and not adjacent_cell.mined:
                             self.reveal_cell_area(adjacent_cell)
+            
+            # end game if all unmined cells revealed
+            if self.board.n_cells - len(self.revealed_cells) == self.settings.n_mines:
+                self.score = self.settings.n_mines
+                self.check_score()
     
     def reveal_all_cells(self):
         for cell in self.board:
+            #~ if not cell.flagged and not cell.mined:
             cell.hidden = False
 
 class Cell:
@@ -288,4 +305,3 @@ def main():
     
 if __name__ == '__main__':
     main()
-    

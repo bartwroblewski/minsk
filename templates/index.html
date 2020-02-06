@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
     <html>
         <head>
 <!--
@@ -75,8 +75,8 @@
                 return json
             }
             
-            async getGamesState(game_id) {
-                const url = new URL("{{url_for('get_games_state', _external=True)}}")
+            async getGameBoard(game_id) {
+                const url = new URL("{{url_for('get_game_board', _external=True)}}")
                 const params = new URLSearchParams({'game_id': game_id})
                 url.search = params
                 const response = await fetch(url)
@@ -84,33 +84,27 @@
                 
                 this.game_id = game_id
                 this.onGameDataReceived(json)
-                this.onGamesListReceived(json.current_games)
 
                 return json
             }
             
-            async revealCellArea(row, col) {
-                //~ const url = new URL('http://192.168.1.14:5010/reveal_cell_area')
-                const url = new URL("{{url_for('reveal_cell_area', _external=True)}}")
-                const params = new URLSearchParams({
-                    'row': row,
-                    'col': col,
-                    'game_id': this.game_id,
-                })
-                url.search = params
+            async getCurrentGames() {
+                const url = new URL("{{url_for('get_current_games', _external=True)}}")
                 const response = await fetch(url)
                 const json = await response.json()
-                this.onGameDataReceived(json)
+                
+                this.onCurrentGamesReceived(json.current_games)
+
                 return json
             }
             
-            async toggleFlag(row, col) {
-                //~ const url = new URL('http://192.168.1.14:5010/toggle_flag')
-                const url = new URL("{{url_for('toggle_flag', _external=True)}}")
+            async move(row, col, move_name) {
+                const url = new URL("{{url_for('move', _external=True)}}")
                 const params = new URLSearchParams({
                     'row': row,
                     'col': col,
-                    'game_id': this.game_id,
+                    'move_name': move_name,
+                    'game_id': this.game_id,                
                 })
                 url.search = params
                 const response = await fetch(url)
@@ -124,7 +118,7 @@
             }
             
             bindGamesListReceived(callback) {
-                this.onGamesListReceived = callback
+                this.onCurrentGamesReceived = callback
             }
         }
         
@@ -160,20 +154,21 @@
                 })
             }
             
-            refreshGamesList(current_games_ids) {
-                
+            refreshGamesList(current_games) {
+                console.log('REFRESHONG', current_games)
                 this.current_games_list.innerHTML = ''
                 
-                current_games_ids.forEach(game_id => {
+                current_games.forEach(game => {
                     let li = document.createElement('li')
-                    li.textContent = game_id
+                    li.id = game.id
+                    li.textContent = `Started ${game.started_ago} minutes ago, completed in ${game.completion}%`
                     this.current_games_list.appendChild(li)
                 })
             }
             
             bindGamesListItemClicked(handler) {
                 this.current_games_list.addEventListener('click', e => {
-                    let game_id = e.target.textContent
+                    let game_id = e.target.id
                     handler(game_id)
                 })
             }
@@ -209,14 +204,15 @@
                 this.view = view
                 
                 this.model.bindGameDataReceived(this.handleGameDataReceived)
-                this.model.bindGamesListReceived(this.handleGamesListReceived)
+                this.model.bindGamesListReceived(this.handleCurrentGamesReceived)
                 this.view.bindNewGameClick(this.handleNewGameClick)
                 this.view.bindBoardClick(this.handleBoardClick)
                 this.view.bindBoardContextMenu(this.handleContextMenu)
                 this.view.bindGamesListItemClicked(this.handleGamesListItemClicked)
                 
                 this.model.startNewGame()
-                this.pollGamesState()
+                //this.pollGamesState()
+                this.pollCurrentGames()
             }
             
             pollGamesState = () => {
@@ -226,23 +222,30 @@
                 }, 1000)
             }
             
+            pollCurrentGames = () => {
+                let interval = setInterval(() => {
+                    console.log('polling current games')
+                    this.model.getCurrentGames()
+                }, 1000)
+            }
+                       
             handleGameDataReceived = game_data => {
 				if (game_data.end_status) {
 					this.view.end_status.textContent = game_data.end_status
 				}
-                //~ this.view.refreshGamesList(game_data.current_games_ids)
                 if (game_data.board) {
 					this.view.drawBoard(game_data.board)
 				}
             }      
             
-            handleGamesListReceived = current_games_ids => {
-				console.log('current games:', current_games_ids)
-                this.view.refreshGamesList(current_games_ids)
+            handleCurrentGamesReceived = current_games => {
+                console.log('received current_games')
+                console.log(current_games)
+                this.view.refreshGamesList(current_games)
             }
             
             handleGamesListItemClicked = game_id => {
-                this.model.getGamesState(game_id)
+                this.model.getGameBoard(game_id)
             }
             
             handleNewGameClick = () => {
@@ -258,11 +261,11 @@
             }
             
             revealCellArea = async (row, col) => {
-                let board = await this.model.revealCellArea(row, col)
+                let board = await this.model.move(row, col, 'reveal_cell_area')
             }
             
-            async toggleFlag(row, col) {
-                let board = await this.model.toggleFlag(row, col)
+            toggleFlag = async (row, col) => {
+                let board = await this.model.move(row, col, 'toggle_flag')
             }
         }
         
