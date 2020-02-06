@@ -41,8 +41,16 @@ def handle_start_new_game():
     
 @socketio.on('refresh_games_list')
 def handle_refresh_games_list():
+	games_list = [
+        {
+            'id': k,
+            'started_ago': round((datetime.datetime.now() - games_manager.games[k]['game_creation_date']).total_seconds() / 60),
+            'completion': str(games_manager.games[k]['game'].completion()),
+        }
+        for k, v in games_manager.games.items()
+    ] 
 	response = {
-		'games_list': [g for g in games_manager.games.keys()]
+		'games_list': games_list,
 	}
 	emit('games_list_refreshed', response, broadcast=True)
     
@@ -70,6 +78,15 @@ def handle_board_move(data):
 		'end_status': game.end_status,
 	}
 	emit('board_changed', response, broadcast=True)
+	
+@socketio.on('switch_game')
+def handle_switch_game(data):
+	game_id = data['game_id']
+	game = games_manager.get_game(game_id)
+	response = {
+		'board': game.board.to_dict(),
+	}
+	emit('game_switched', response)
 	
 if __name__ == '__main__':
 	socketio.run(app, port=8000)
