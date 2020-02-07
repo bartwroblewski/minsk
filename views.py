@@ -81,6 +81,6 @@ def handle_switch_game(data):
     emit('game_switched', response)
     
 if __name__ == '__main__':
-    socketio.run(app, port=8000)
-    #~ app.run(port=8000)
-    # app.run(host='192.168.1.14', port=5010)
+    #~ socketio.run(app, port=8000)
+    socketio.run(app, host='192.168.1.14', port=5010)
+
