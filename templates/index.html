@@ -108,7 +108,11 @@
                 current_games.forEach(game => {
                     let li = document.createElement('li')
                     li.id = game.id
-                    li.textContent = `Started ${game.started_ago} minutes ago, completed in ${game.completion}%, ${game.id}`
+                    li.textContent = ` 
+                        ID: ${game.id},
+                        completed in: ${game.completion}%,
+                        expires in: ${game.secs_to_expire},
+                    `
                     this.current_games_list.appendChild(li)
                 })
             }
@@ -165,10 +169,13 @@
                 
                 this.socket.emit('start_new_game')
                 
+                let interval = setInterval(() => {
+                    this.socket.emit('refresh_games_list')
+                }, 1000)
+                
                 this.socket.on('new_game_started', response => {
 					this.model.game_id = response['game_id']
 					this.view.drawBoard(response['board'])
-					this.view.refreshGamesList(response['games_list'])
 					this.socket.emit('refresh_games_list')
 				})
 				
@@ -188,6 +195,7 @@
 					if (response.end_status) {
 						this.view.end_status.textContent = response.end_status
 					}	
+                    this.socket.emit('refresh_games_list')
 				})
 				
             }

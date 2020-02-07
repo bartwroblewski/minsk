@@ -22,39 +22,42 @@ class GameSettings:
 class GamesManager:
     def __init__(self):
         self.games = {}
-        self.game_expiration = 120 # in seconds
+        self.game_expiration = 3 # in seconds
         
     def register_game(self, game):
         game_id = str(uuid.uuid4())
-        game_creation_date = datetime.datetime.now()
         self.games[game_id] = {
             'game': game,
-            'game_creation_date': game_creation_date,
+            'created_at': datetime.datetime.now(),
         }
         return game_id
+    
+    def secs_to_game_expire(self, game_id):
+        game = self.games[game_id]
+        secs_to_expire = (self.game_expiration - (datetime.datetime.now() - game['created_at']).total_seconds())
+        return secs_to_expire
         
     def unregister_game(self, game_id):
         del self.games[game_id]
         
     def get_game(self, game_id):
         game = self.games.get(game_id)
-        if game:
+        if game:        
             # reset game expiration
-            game['game_creation_date'] = datetime.datetime.now()
+            game['created_at'] = datetime.datetime.now()
             return game['game']
                     
-    def get_current_games(self):
-        d = {}
+    def get_nonexpired_games(self):
+        nonexpired_games = []
         for k, v in self.games.items():
-            game_creation_date = self.games[k]['game_creation_date']
-            delta = (datetime.datetime.now() - game_creation_date)
-            if not delta.total_seconds() > self.game_expiration:
-                d[k] = v
-            else:
-                game = self.games[k]['game']
-                game.end_status = "expired"
-                #self.unregister_game(k)
-        return d
+            secs_to_expire = self.secs_to_game_expire(k)
+            if secs_to_expire > 0:
+                d = {}
+                d['secs_to_expire'] = secs_to_expire
+                d['completion'] = str(self.games[k]['game'].completion())
+                d['id'] = k
+                nonexpired_games.append(d)
+        return nonexpired_games
        
 
 class Game:
@@ -106,6 +109,7 @@ class Game:
     
     def toggle_flag(self, row, col):
         cell = self.board[row][col]
+        print('toggling flag')
         
         if not cell.hidden:
             return 'Cannot flag/unflag an already revealed cell!'
