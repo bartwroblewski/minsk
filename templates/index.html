@@ -191,10 +191,10 @@
                 this.socket.on('board_changed', response => {
 					if (this.model.game_id === response['game_id']) {
 						app.view.drawBoard(response['board'])
-					}
-					if (response.end_status) {
-						this.view.end_status.textContent = response.end_status
-					}	
+                        if (response.end_status) {
+                            this.view.end_status.textContent = response.end_status
+                        }	
+                    }
                     this.socket.emit('refresh_games_list')
 				})
 				
