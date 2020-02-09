@@ -1,14 +1,8 @@
-import uuid
-import datetime
-import os
-
 from flask import (
     Flask, 
     render_template, 
-    Response, 
     jsonify,
     request,
-    session,
 )
 from flask_socketio import SocketIO, emit
 
@@ -56,10 +50,6 @@ def handle_board_move(data):
 
     move_name = data['move_name']
     getattr(game, move_name)(cell)
-    #~ if move_name == 'reveal_cell_area':
-        #~ game.reveal_cell_area(cell)       
-    #~ if move_name == 'toggle_flag':
-        #~ game.toggle_flag(cell)
 
     if game.end_status:
         games_manager.unregister_game(game_id)
