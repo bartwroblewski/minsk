@@ -17,9 +17,9 @@ socketio = SocketIO(app)
 def index(): 
     return render_template('index.html')
 
-@socketio.on('my event')
-def handle_my_event(message):
-    print(message)
+#~ @socketio.on('socket_connected')
+#~ def handle_my_event(message):
+    #~ print(message)
 
 @socketio.on('start_new_game')
 def handle_start_new_game():

@@ -163,9 +163,9 @@
                 this.view.bindBoardContextMenu(this.handleContextMenu)
                 this.view.bindGamesListItemClicked(this.handleGamesListItemClicked)
                 
-                this.socket.on('connect', () => {
-                    socket.emit('my event', {data: 'Im connected!'})
-                })
+                //~ this.socket.on('connect', () => {
+                    //~ socket.emit('socket_connected', {data: 'Im connected!'})
+                //~ })
                 
                 this.socket.emit('start_new_game')
                 
@@ -209,12 +209,6 @@
 				}
             }      
             
-            handleCurrentGamesReceived = current_games => {
-                console.log('received current_games')
-                console.log(current_games)
-                this.view.refreshGamesList(current_games)
-            }
-            
             handleGamesListItemClicked = game_id => {
                 //~ this.model.getGameBoard(game_id)
                 this.socket.emit('switch_game', {
@@ -223,36 +217,24 @@
             }
             
             handleNewGameClick = () => {
-                //~ this.model.startNewGame()
                 this.socket.emit('start_new_game')
             }
             
             handleBoardClick = (row, col) => {
-                this.revealCellArea(row, col)
+                this.boardMove(row, col, 'reveal_cell_area')
             }
             
-            handleContextMenu = async (row, col) => {
-                this.toggleFlag(row, col)
+            handleContextMenu = (row, col) => {
+                this.boardMove(row, col, 'toggle_flag')
             }
             
-            revealCellArea = async (row, col) => {
-                //~ let board = await this.model.move(row, col, 'reveal_cell_area')
+            boardMove = (row, col, move_name) => {
                 this.socket.emit('board_move', {
-					row: row,
-					col: col,
-					game_id: this.model.game_id,
-					move_name: 'reveal_cell_area',
-				})
-            }
-            
-            toggleFlag = async (row, col) => {
-                //~ let board = await this.model.move(row, col, 'toggle_flag')
-                this.socket.emit('board_move', {
-					row: row,
-					col: col,
-					game_id: this.model.game_id,
-					move_name: 'toggle_flag',
-				})
+                    row: row,
+                    col: col,
+                    game_id: this.model.game_id,
+                    move_name: move_name,
+                })
             }
         }
         
