@@ -62,51 +62,17 @@ class GamesManager:
 
 class Game:
     def __init__(self):      
-        self.created_at = datetime.datetime.now()
-        self.id_ = str(uuid.uuid4())
         self.settings = GameSettings()
         self.board = Board(
             self.settings.n_rows, 
             self.settings.n_cols,
+            self.settings.n_mines,
         )
         
         self.end_status = None
         self.revealed_cells = []
         self.score = 0
         
-        self.place_mines_randomly()
-        self.update_neighbours()
-        
-    def check_score(self):
-        if self.score == self.settings.n_mines:
-            self.end_status = 'won'
-            self.reveal_all_cells()
-            
-    def check_completion(self):   
-        return (self.score / self.settings.n_mines) * 100 
-                
-    def place_mine_randomly(self):
-        random_cell = self.board.get_random_cell()
-        if random_cell.mined:
-            # try again if already mined
-            self.place_mine_randomly()
-        else:
-            random_cell.mine()
-    
-    def update_neighbours(self):
-        for cell in self.board:
-            if cell.mined:
-                neighbours = self.board.get_cell_neighbours(cell)
-                for n in neighbours:
-                    n.value += 1 
-        
-    def place_mines_randomly(self):
-        if self.settings.n_mines > self.board.n_cells:
-            raise NotEnoughBoardCellsError(self.settings.n_mines, self.n_cells)
-            
-        for i in range(self.settings.n_mines):
-            self.place_mine_randomly()
-    
     def toggle_flag(self, cell):        
         if not cell.hidden:
             return 'Cannot flag/unflag an already revealed cell!'
@@ -151,6 +117,16 @@ class Game:
         for cell in self.board:
             #~ if not cell.flagged and not cell.mined:
             cell.hidden = False
+        
+    def check_score(self):
+        if self.score == self.settings.n_mines:
+            self.end_status = 'won'
+            self.reveal_all_cells()
+            
+    def check_completion(self):   
+        return (self.score / self.settings.n_mines) * 100 
+                
+    
 
 class Cell:
     def __init__(self, row, col):
@@ -206,11 +182,15 @@ class Board:
     MINE_SYMBOL = 'm'
     FLAG_SYMBOL = 'f'
     
-    def __init__(self, n_rows, n_cols):
+    def __init__(self, n_rows, n_cols, n_mines):
         self.n_rows = n_rows
         self.n_cols = n_cols
         self.n_cells = n_rows * n_cols 
+        self.n_mines = n_mines
         self.board = self.get_board()
+        
+        self.place_mines_randomly()
+        self.update_neighbours()
         
     def get_board(self):
         board = []
@@ -245,6 +225,28 @@ class Board:
     def contains(self, row, col):
         if 0 <= row <= (self.n_rows - 1) and 0 <= col <= (self.n_cols - 1):
             return True
+            
+    def place_mine_randomly(self):
+        random_cell = self.get_random_cell()
+        if random_cell.mined:
+            # try again if already mined
+            self.place_mine_randomly()
+        else:
+            random_cell.mine()
+    
+    def update_neighbours(self):
+        for cell in self:
+            if cell.mined:
+                neighbours = self.get_cell_neighbours(cell)
+                for n in neighbours:
+                    n.value += 1 
+        
+    def place_mines_randomly(self):
+        if self.n_mines > self.n_cells:
+            raise NotEnoughBoardCellsError(self.n_mines, self.n_cells)
+            
+        for i in range(self.n_mines):
+            self.place_mine_randomly()
             
     def __str__(self):
         return '\n'.join(str(row) for row in self.board)
