@@ -4,11 +4,15 @@
 			<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
             <style>                
                 .silver_text {
-                    color: silver;
+                    color: rgb(150, 150, 150);
                 }
                 
                 .grey {
                     background: grey;
+                }
+                
+                .green_text {
+                    color: green;
                 }
                                 
                 #board {
@@ -28,19 +32,30 @@
                     display: flex;
                 }
                 
+                #controls {
+                    display: flex;
+                    width: 70%;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                }
+                
+                #end_status {
+                    color: red;
+                }
+                
                 #board_container {
                     width: 50%;
                 }
                 
                 #current_games_list {
-                    width: 100%;
+                    width: 50%;
                 }
             </style>
         </head>
         <body>
             <p id="header">
-                Min<span class="silver_text">Sk</span><br>
-                minesweeper in <span class="silver_text">Flask</span>
+                min<span class="silver_text">sk</span><br>
+                a minesweeper in <span class="silver_text">Flask</span>
             </p>
             <div id="board_and_list">
                 <div id="board_container">
@@ -50,7 +65,10 @@
                     </div>
                     <table id="board"></table>
                 </div>
-                <ul id="current_games_list"></ul>
+                <div>
+                    Currently played games (click to join):
+                    <ul id="current_games_list"></ul>
+                </div>
             </div>
         </body>
         <script>
@@ -93,21 +111,26 @@
                 })
             }
             
-            refreshGamesList(current_games) {
+            refreshGamesList(current_games, game_id) {
                 console.log('REFRESHiNG GAMES LIST', current_games)
                 this.current_games_list.innerHTML = ''
                 
                 current_games.forEach(game => {
                     let li = document.createElement('li')
                     li.id = game.id
+                    if (game.id === game_id) {
+                        li.style.color = 'green'
+                    } else {
+                        li.style.color = ''
+                    }
                     li.textContent = ` 
-                        Completed in: ${game.completion}%,
-                        expires in: ${game.secs_to_expire},
+                        Game completed in: ${game.completion}%,
+                        expires in: ${game.secs_to_expire} seconds;
                     `
                     this.current_games_list.appendChild(li)
                 })
             }
-            
+                        
             bindGamesListItemClicked(handler) {
                 this.current_games_list.addEventListener('click', e => {
                     this.end_status.textContent = ''
@@ -169,7 +192,8 @@
 				})
 				
 				this.socket.on('games_list_refreshed', (response) => {
-					this.view.refreshGamesList(response['games_list'])
+                    console.log('model id', this.model.id)
+					this.view.refreshGamesList(response['games_list'], this.model.game_id)
 				})
 				
 				this.socket.on('game_switched', response => {

@@ -89,7 +89,7 @@ class Game:
     def reveal_cell_area(self, cell):
         if not cell.flagged:
             if cell.mined:
-                self.end_status = 'lost'
+                self.end_status = 'You stepped on a mine!'
                 self.reveal_all_cells()
             else:
                 cell.hidden = False
@@ -119,7 +119,7 @@ class Game:
         
     def check_score(self):
         if self.score == self.settings.n_mines:
-            self.end_status = 'won'
+            self.end_status = 'You win!'
             self.reveal_all_cells()
             
     def check_completion(self):   
