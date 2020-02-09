@@ -55,10 +55,11 @@ def handle_board_move(data):
     cell = game.board[row][col]
 
     move_name = data['move_name']
-    if move_name == 'reveal_cell_area':
-        game.reveal_cell_area(cell)       
-    if move_name == 'toggle_flag':
-        game.toggle_flag(cell)
+    getattr(game, move_name)(cell)
+    #~ if move_name == 'reveal_cell_area':
+        #~ game.reveal_cell_area(cell)       
+    #~ if move_name == 'toggle_flag':
+        #~ game.toggle_flag(cell)
 
     if game.end_status:
         games_manager.unregister_game(game_id)
