@@ -163,9 +163,9 @@
                 this.view.bindBoardContextMenu(this.handleContextMenu)
                 this.view.bindGamesListItemClicked(this.handleGamesListItemClicked)
                 
-                //this.model.startNewGame()
-                //this.pollGameBoard()
-                //this.pollCurrentGames()
+                socket.on('connect', () => {
+                    socket.emit('my event', {data: 'Im connected!'})
+                })
                 
                 this.socket.emit('start_new_game')
                 
@@ -270,12 +270,6 @@
             }
         }
         
-        socket = io()
-        socket.on('connect', () => {
-			socket.emit('my event', {data: 'Im connected!'})
-		})
-		let app = new Controller(new Model(), new View(), socket)
-		
-		
+		let app = new Controller(new Model(), new View(), io())
         </script>
     </html>
