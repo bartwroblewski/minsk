@@ -59,14 +59,6 @@
             constructor() {
                 this.game_id = ''
             }
-            
-            bindGameDataReceived(callback) {
-                this.onGameDataReceived = callback
-            }
-            
-            bindGamesListReceived(callback) {
-                this.onCurrentGamesReceived = callback
-            }
         }
         
         class View {
@@ -156,8 +148,6 @@
                 this.view = view
                 this.socket = socket
                 
-                this.model.bindGameDataReceived(this.handleGameDataReceived)
-                this.model.bindGamesListReceived(this.handleCurrentGamesReceived)
                 this.view.bindNewGameClick(this.handleNewGameClick)
                 this.view.bindBoardClick(this.handleBoardClick)
                 this.view.bindBoardContextMenu(this.handleContextMenu)
@@ -199,15 +189,6 @@
 				})
 				
             }
-                                   
-            handleGameDataReceived = game_data => {
-				if (game_data.end_status) {
-					this.view.end_status.textContent = game_data.end_status
-				}
-                if (game_data.board) {
-					this.view.drawBoard(game_data.board)
-				}
-            }      
             
             handleGamesListItemClicked = game_id => {
                 //~ this.model.getGameBoard(game_id)
