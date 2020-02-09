@@ -22,7 +22,7 @@ class GameSettings:
 class GamesManager:
     def __init__(self):
         self.games = {}
-        self.game_expiration = 3 # in seconds
+        self.game_expiration = 20 # in seconds
         
     def register_game(self, game):
         game_id = str(uuid.uuid4())
@@ -35,7 +35,7 @@ class GamesManager:
     def get_secs_to_game_expire(self, game_id):
         game = self.games[game_id]
         secs_to_expire = (self.game_expiration - (datetime.datetime.now() - game['created_at']).total_seconds())
-        return secs_to_expire
+        return round(secs_to_expire)
         
     def unregister_game(self, game_id):
         del self.games[game_id]

@@ -2,26 +2,7 @@
     <html>
         <head>
 			<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
-            <style>
-                body {
-                    background: rgb(100, 100, 100);
-                    //font-family: Oswald;
-                }
-                
-                #logo {
-                   // letter-spacing: 1px;
-                }
-                
-                #end_status {
-					color: red;
-				}
-                td {
-                    border: 1px solid black;
-                    width: 15px;
-                    height: 15px;
-                    text-align: center;
-                } 
-                
+            <style>                
                 .silver_text {
                     color: silver;
                 }
@@ -30,25 +11,56 @@
                     background: grey;
                 }
                 
+                #board_and_list {
+                    display: flex;
+                }
+                
+                #board_container {
+                    width: 40%;
+                    display: inline-flex;
+                    flex-direction: column;
+                    justify-content: center;
+                }
+                
+                #controls {
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                }
+                
+                #end_status {
+					color: red;
+				}
+                
                 #board {
                     background: rgb(175, 175, 175);
                     font-size: 10px;
                 }
                 
-                #board_container {
-                    display: flex;
-                    justify-content: center;
+                td {
+                    border: 1px solid black;
+                    width: 15px;
+                    height: 15px;
+                    text-align: center;
+                } 
+                
+                #current_games_list {
+                    display: inline-block;
+                    margin: 10px;
                 }
             </style>
         </head>
         <body>
-            <p id="logo">
+            <p id="header">
                 Min<span class="silver_text">Sk</span><br>
                 minesweeper in <span class="silver_text">Flask</span>
             </p>
-            <button id="new_game_button">New game</button>
-            <div id="end_status"></div>
             <div id="board_container">
+                <div id="controls">
+                    <button id="new_game_button">New game</button>
+                    <div id="end_status"></div>
+                </div>
                 <table id="board"></table>
             </div>
             <ul id="current_games_list"></ul>
@@ -101,8 +113,7 @@
                     let li = document.createElement('li')
                     li.id = game.id
                     li.textContent = ` 
-                        ID: ${game.id},
-                        completed in: ${game.completion}%,
+                        Completed in: ${game.completion}%,
                         expires in: ${game.secs_to_expire},
                     `
                     this.current_games_list.appendChild(li)
