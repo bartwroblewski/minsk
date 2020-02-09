@@ -58,7 +58,7 @@ def handle_board_move(data):
     if move_name == 'reveal_cell_area':
         game.reveal_cell_area(cell)       
     if move_name == 'toggle_flag':
-        game.toggle_flag(row, col)
+        game.toggle_flag(cell)
 
     if game.end_status:
         games_manager.unregister_game(game_id)
@@ -81,6 +81,6 @@ def handle_switch_game(data):
     emit('game_switched', response)
     
 if __name__ == '__main__':
-    #~ socketio.run(app, port=8000)
-    socketio.run(app, host='192.168.1.14', port=5010)
+    socketio.run(app, port=8000)
+    #~ socketio.run(app, host='192.168.1.14', port=5010)
 

@@ -32,7 +32,7 @@ class GamesManager:
         }
         return game_id
     
-    def secs_to_game_expire(self, game_id):
+    def get_secs_to_game_expire(self, game_id):
         game = self.games[game_id]
         secs_to_expire = (self.game_expiration - (datetime.datetime.now() - game['created_at']).total_seconds())
         return secs_to_expire
@@ -50,11 +50,11 @@ class GamesManager:
     def get_nonexpired_games(self):
         nonexpired_games = []
         for k, v in self.games.items():
-            secs_to_expire = self.secs_to_game_expire(k)
+            secs_to_expire = self.get_secs_to_game_expire(k)
             if secs_to_expire > 0:
                 d = {}
                 d['secs_to_expire'] = secs_to_expire
-                d['completion'] = str(self.games[k]['game'].completion())
+                d['completion'] = str(self.games[k]['game'].check_completion())
                 d['id'] = k
                 nonexpired_games.append(d)
         return nonexpired_games
@@ -82,7 +82,7 @@ class Game:
             self.end_status = 'won'
             self.reveal_all_cells()
             
-    def completion(self):   
+    def check_completion(self):   
         return (self.score / self.settings.n_mines) * 100 
                 
     def place_mine_randomly(self):
@@ -107,10 +107,7 @@ class Game:
         for i in range(self.settings.n_mines):
             self.place_mine_randomly()
     
-    def toggle_flag(self, row, col):
-        cell = self.board[row][col]
-        print('toggling flag')
-        
+    def toggle_flag(self, cell):        
         if not cell.hidden:
             return 'Cannot flag/unflag an already revealed cell!'
             
