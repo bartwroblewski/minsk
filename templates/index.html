@@ -163,7 +163,7 @@
                 this.view.bindBoardContextMenu(this.handleContextMenu)
                 this.view.bindGamesListItemClicked(this.handleGamesListItemClicked)
                 
-                socket.on('connect', () => {
+                this.socket.on('connect', () => {
                     socket.emit('my event', {data: 'Im connected!'})
                 })
                 
@@ -199,21 +199,7 @@
 				})
 				
             }
-            
-            pollCurrentGames = () => {
-                let interval = setInterval(() => {
-                    console.log('polling current games')
-                    this.model.getCurrentGames()
-                }, 1000)
-            }
-            
-            pollGameBoard = () => {
-				let interval = setInterval(() => {
-                    console.log('polling game board')
-                    this.model.getGameBoard()
-                }, 1000)
-			}
-                       
+                                   
             handleGameDataReceived = game_data => {
 				if (game_data.end_status) {
 					this.view.end_status.textContent = game_data.end_status
@@ -251,7 +237,7 @@
             
             revealCellArea = async (row, col) => {
                 //~ let board = await this.model.move(row, col, 'reveal_cell_area')
-                socket.emit('board_move', {
+                this.socket.emit('board_move', {
 					row: row,
 					col: col,
 					game_id: this.model.game_id,
@@ -261,7 +247,7 @@
             
             toggleFlag = async (row, col) => {
                 //~ let board = await this.model.move(row, col, 'toggle_flag')
-                socket.emit('board_move', {
+                this.socket.emit('board_move', {
 					row: row,
 					col: col,
 					game_id: this.model.game_id,
