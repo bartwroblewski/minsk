@@ -237,14 +237,7 @@ class Board:
         for row in self.board:
             for cell in row:
                 yield cell
-    
-    def show_symbols(self):
-        '''For offline mode'''
-        for row in self.board:
-            s = ' '.join(str(cell.symbol('X')) for cell in row)
-            print(s)
-        print('\n')
-                        
+                 
     def to_dict(self):
         d = {
             'n_rows': self.n_rows,
@@ -252,6 +245,13 @@ class Board:
             'rows': [[cell.to_dict() for cell in row] for row in self.board],
         }
         return d
+        
+    def show_symbols(self):
+        '''Display of offline mode'''
+        for row in self.board:
+            s = ' '.join(str(cell.symbol('X')) for cell in row)
+            print(s)
+        print('\n')
 
 def main():
     # OFFLINE VERSION, UNDER CONSTRUCTION
