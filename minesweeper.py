@@ -135,7 +135,7 @@ class Cell:
         self.mined = False
         self.flagged = False
                 
-    def symbol(self, custom_empty_symbol):
+    def symbol(self, custom_empty_symbol=None):
         if self.hidden and not self.flagged:
             return custom_empty_symbol or ''
         elif not self.hidden:
