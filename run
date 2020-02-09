@@ -1,3 +1,3 @@
 source env/bin/activate
-export SECRET_KEY=b'\xd0e\xdc\xe6pC+HA\xc3\x9e\xc8\xd0\x8b\x9f\xa7\xe8\x83[\x1f\x85\xbb%\xe1'
+export SECRET_KEY='so secret!'
 python views.py
