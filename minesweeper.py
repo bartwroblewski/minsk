@@ -200,6 +200,13 @@ class Board:
         for row, col in neighbours_coors:
             if self.contains(row, col): 
                 yield self.board[row][col] 
+                
+    def update_neighbours(self):
+        for cell in self:
+            if cell.mined:
+                neighbours = self.get_cell_neighbours(cell)
+                for n in neighbours:
+                    n.value += 1 
         
     def contains(self, row, col):
         '''Check if the given row/cell combination
@@ -215,13 +222,6 @@ class Board:
             self.place_mine_randomly()
         else:
             random_cell.mined = True
-    
-    def update_neighbours(self):
-        for cell in self:
-            if cell.mined:
-                neighbours = self.get_cell_neighbours(cell)
-                for n in neighbours:
-                    n.value += 1 
         
     def place_mines_randomly(self):
         if self.n_mines > self.n_cells:
@@ -229,10 +229,7 @@ class Board:
             
         for i in range(self.n_mines):
             self.place_mine_randomly()
-            
-    def __str__(self):
-        return '\n'.join(str(row) for row in self.board)
-        
+                   
     def __getitem__(self, i):
         return self.board[i]
         
