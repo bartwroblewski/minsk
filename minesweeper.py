@@ -59,7 +59,6 @@ class GamesManager:
                 nonexpired_games.append(d)
         return nonexpired_games
        
-
 class Game:
     def __init__(self):      
         self.settings = GameSettings()
@@ -126,8 +125,6 @@ class Game:
     def check_completion(self):   
         return (self.score / self.settings.n_mines) * 100 
                 
-    
-
 class Cell:
     def __init__(self, row, col):
         self.row = row
@@ -137,27 +134,13 @@ class Cell:
         self.hidden = True
         self.mined = False
         self.flagged = False
-        
-    def unhide(self):
-        if self.mined:
-            return 'You stepped on a mine!'
-        self.hidden = False
-        
-    def flag(self):
-        self.flagged = True
-        
-    def unflag(self):
-        self.flagged = False
-    
-    def mine(self):
-        self.mined = True
-        
-    def symbol(self):
+                
+    def symbol(self, custom_empty_symbol):
         if self.hidden and not self.flagged:
-            return ''
+            return custom_empty_symbol or ''
         elif not self.hidden:
             if self.value == 0 and not self.mined:
-                return ''
+                return custom_empty_symbol or ''
             elif self.mined:
                 return 'M'
             else:
@@ -177,11 +160,7 @@ class Cell:
         }
         return d
         
-class Board:
-    EMPTY_SYMBOL = 'x'
-    MINE_SYMBOL = 'm'
-    FLAG_SYMBOL = 'f'
-    
+class Board:    
     def __init__(self, n_rows, n_cols, n_mines):
         self.n_rows = n_rows
         self.n_cols = n_cols
@@ -223,6 +202,9 @@ class Board:
                 yield self.board[row][col] 
         
     def contains(self, row, col):
+        '''Check if the given row/cell combination
+        lies within the board.
+        '''
         if 0 <= row <= (self.n_rows - 1) and 0 <= col <= (self.n_cols - 1):
             return True
             
@@ -232,7 +214,7 @@ class Board:
             # try again if already mined
             self.place_mine_randomly()
         else:
-            random_cell.mine()
+            random_cell.mined = True
     
     def update_neighbours(self):
         for cell in self:
@@ -258,53 +240,45 @@ class Board:
         for row in self.board:
             for cell in row:
                 yield cell
-        
-    def show_values(self):
-        for row in self.board:
-            s = ' '.join(str(cell.value) for cell in row)
-            print(s)
-        print('\n')
-        
+    
     def show_symbols(self):
-        # print(' '.join(str(i) for i in range(self.n_cols)))
+        '''For offline mode'''
         for row in self.board:
-            s = ' '.join(str(cell.symbol()) for cell in row)
+            s = ' '.join(str(cell.symbol('X')) for cell in row)
             print(s)
         print('\n')
-        
-    def as_string(self):
-        s = ''
-        for row in self.board:
-            s += ' '.join(str(cell.symbol()) for cell in row)
-            s += '\n'
-        print(s)
-        return s
-                
+                        
     def to_dict(self):
         d = {
             'n_rows': self.n_rows,
             'n_cols': self.n_cols,
-            #~ 'cells': [cell.to_dict() for row in self.board for cell in row],
             'rows': [[cell.to_dict() for cell in row] for row in self.board],
         }
         return d
 
 def main():
+    # OFFLINE VERSION, UNDER CONSTRUCTION
     game = Game()
-    game.place_mines_randomly()
-    game.update_neighbours()
+    game.board.place_mines_randomly()
+    game.board.update_neighbours()
     
     while True:
         game.board.show_symbols()
         
-        action = input('reveal or flag (r/f)?')
-        row, col = input('row, col').split(' ')
+        action = input('Reveal or flag (r/f)?')
+        row, col = input('Row, col?').split(' ')
         cell = game.board[int(row)][int(col)]
         
         if action == 'r':
             game.reveal_cell_area(cell)
         if action == 'f':
-            game.place_flag(cell.row, cell.col)
+            game.toggle_flag(cell)
+        
+        game.check_score()
+        print(game.end_status)
+        if game.end_status:
+            print(game.end_status)
+            break
     
 if __name__ == '__main__':
     main()
