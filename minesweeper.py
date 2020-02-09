@@ -123,7 +123,8 @@ class Game:
             self.reveal_all_cells()
             
     def check_completion(self):   
-        return (self.score / self.settings.n_mines) * 100 
+        #~ return (self.score / self.settings.n_mines) * 100 
+        return round((len(self.revealed_cells) / self.board.n_cells) * 100) 
                 
 class Cell:
     def __init__(self, row, col):

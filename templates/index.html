@@ -10,29 +10,7 @@
                 .grey {
                     background: grey;
                 }
-                
-                #board_and_list {
-                    display: flex;
-                }
-                
-                #board_container {
-                    width: 40%;
-                    display: inline-flex;
-                    flex-direction: column;
-                    justify-content: center;
-                }
-                
-                #controls {
-                    width: 100%;
-                    display: flex;
-                    justify-content: space-between;
-                    margin-bottom: 10px;
-                }
-                
-                #end_status {
-					color: red;
-				}
-                
+                                
                 #board {
                     background: rgb(175, 175, 175);
                     font-size: 10px;
@@ -45,9 +23,17 @@
                     text-align: center;
                 } 
                 
+                #board_and_list {
+                    width: 100%;
+                    display: flex;
+                }
+                
+                #board_container {
+                    width: 50%;
+                }
+                
                 #current_games_list {
-                    display: inline-block;
-                    margin: 10px;
+                    width: 100%;
                 }
             </style>
         </head>
@@ -56,14 +42,16 @@
                 Min<span class="silver_text">Sk</span><br>
                 minesweeper in <span class="silver_text">Flask</span>
             </p>
-            <div id="board_container">
-                <div id="controls">
-                    <button id="new_game_button">New game</button>
-                    <div id="end_status"></div>
+            <div id="board_and_list">
+                <div id="board_container">
+                    <div id="controls">
+                        <button id="new_game_button">New game</button>
+                        <div id="end_status"></div>
+                    </div>
+                    <table id="board"></table>
                 </div>
-                <table id="board"></table>
+                <ul id="current_games_list"></ul>
             </div>
-            <ul id="current_games_list"></ul>
         </body>
         <script>
                
