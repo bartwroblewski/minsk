@@ -1,1 +1,1 @@
-web: gunicorn views:app
+web: gunicorn -k gevent -w 1 views:app
