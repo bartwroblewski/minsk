@@ -22,8 +22,9 @@ def index():
     #~ print(message)
 
 @socketio.on('start_new_game')
-def handle_start_new_game():
-    game = Game()   
+def handle_start_new_game(data):
+    difficulty = data['difficulty'].lower()
+    game = Game(difficulty) 
     game_id = games_manager.register_game(game)
 
     response = {
@@ -74,4 +75,3 @@ def handle_switch_game(data):
 if __name__ == '__main__':
     socketio.run(app, port=8000)
     #~ socketio.run(app, host='192.168.1.14', port=5010)
-

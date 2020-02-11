@@ -34,9 +34,12 @@
                 
                 #controls {
                     display: flex;
-                    width: 70%;
-                    justify-content: space-between;
+                    width: 100%;
                     margin-bottom: 10px;
+                }
+                
+                #new_game_button {
+                    margin-right: 20px;
                 }
                 
                 #end_status {
@@ -54,6 +57,7 @@
                 
                 li:hover {
                     cursor: pointer;
+                    color: silver;
                 }
                     
             </style>
@@ -67,8 +71,16 @@
                 <div id="board_container">
                     <div id="controls">
                         <button id="new_game_button">New game</button>
-                        <div id="end_status"></div>
+                        <div>
+                            <label for="difficulty_select">Difficulty:</label>
+                            <select id="difficulty_select">
+                                <option>Easy</option>
+                                <option selected>Normal</option>
+                                <option>Hard</option>
+                            </select>
+                        </div>   
                     </div>
+                    <div id="end_status"></div>
                     <table id="board"></table>
                 </div>
                 <div>
@@ -91,6 +103,7 @@
                 this.new_game_button = document.getElementById('new_game_button')
                 this.current_games_list = document.getElementById('current_games_list')
                 this.end_status = document.getElementById('end_status')
+                this.difficulty_select = document.getElementById('difficulty_select')
             }
             
             drawBoard(board) {
@@ -117,8 +130,8 @@
                 })
             }
             
-            refreshGamesList(current_games, game_id) {
-                console.log('REFRESHiNG GAMES LIST', current_games)
+            drawGamesList(current_games, game_id) {
+                console.log('DRAWING GAMES LIST', current_games)
                 this.current_games_list.innerHTML = ''
                 
                 current_games.forEach(game => {
@@ -201,7 +214,7 @@
                     //~ socket.emit('socket_connected', {data: 'Im connected!'})
                 //~ })
                 
-                this.socket.emit('start_new_game')
+                this.startNewGame()
                 
                 //~ let interval = setInterval(() => {
                     //~ this.socket.emit('refresh_games_list')
@@ -210,17 +223,17 @@
                 this.socket.on('new_game_started', response => {
 					this.model.game_id = response['game_id']
 					this.view.drawBoard(response['board'])		
-                    this.socket.emit('refresh_games_list')			
+                    this.refreshGamesList()
 				})
 				
 				this.socket.on('games_list_refreshed', (response) => {
-					this.view.refreshGamesList(response['games_list'], this.model.game_id)
+					this.view.drawGamesList(response['games_list'], this.model.game_id)
 				})
 				
 				this.socket.on('game_switched', response => {
 					this.model.game_id = response['game_id']
 					this.view.drawBoard(response['board'])
-                    this.socket.emit('refresh_games_list')
+                    this.refreshGamesList()
 				})
 					
                 this.socket.on('board_changed', response => {
@@ -230,19 +243,18 @@
                             this.view.end_status.textContent = response.end_status
                         }	
                     }
-                    this.socket.emit('refresh_games_list')
+                    this.refreshGamesList()
 				})
             }
             
             handleGamesListItemClicked = game_id => {
-                //~ this.model.getGameBoard(game_id)
                 this.socket.emit('switch_game', {
 					'game_id': game_id,
 				})
             }
             
             handleNewGameClick = () => {
-                this.socket.emit('start_new_game')
+                this.startNewGame()
             }
             
             handleBoardClick = (row, col) => {
@@ -251,6 +263,16 @@
             
             handleContextMenu = (row, col) => {
                 this.boardMove(row, col, 'toggle_flag')
+            }
+            
+            startNewGame = () => {
+                this.socket.emit('start_new_game', {
+                    'difficulty': this.view.difficulty_select.value,
+                })
+            }
+            
+            refreshGamesList = () => {
+                this.socket.emit('refresh_games_list')
             }
             
             boardMove = (row, col, move_name) => {

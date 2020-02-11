@@ -10,14 +10,17 @@ class NotEnoughBoardCellsError(Exception):
         return self.message
 
 class GameSettings:
-    def __init__(self):
-        self.n_rows = 20
-        self.n_cols = 20
-        self.mines_ratio = 8
-        self.n_mines = int(round(
-            self.n_rows * self.n_cols / self.mines_ratio
-        ))
-        #~ self.n_mines = 4
+    settings_per_difficulty = {
+        'easy': {'n_rows': 10, 'n_cols': 10, 'n_mines': 5},
+        'normal': {'n_rows': 20, 'n_cols': 20, 'n_mines': 30},
+        'hard': {'n_rows': 30, 'n_cols': 30, 'n_mines': 100},
+    }
+            
+    def __init__(self, difficulty='normal'):
+        self.n_rows = self.settings_per_difficulty[difficulty]['n_rows']
+        self.n_cols = self.settings_per_difficulty[difficulty]['n_cols']
+        self.n_mines = self.settings_per_difficulty[difficulty]['n_mines']
+                
 
 class GamesManager:
     def __init__(self):
@@ -61,8 +64,8 @@ class GamesManager:
         return nonexpired_games
        
 class Game:
-    def __init__(self):      
-        self.settings = GameSettings()
+    def __init__(self, difficulty="normal"):      
+        self.settings = GameSettings(difficulty)
         self.board = Board(
             self.settings.n_rows, 
             self.settings.n_cols,
