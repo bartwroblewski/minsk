@@ -125,23 +125,31 @@
                     let li = document.createElement('li')
                     li.id = game.id
                     li.value = game.secs_to_expire
+                    
                     if (game.id === game_id) {
                         li.style.color = 'green'
                     } else {
                         li.style.color = ''
                     }
                     
-                    li.textContent = ` 
-                            Game completed in: ${game.completion}%,
-                            expires in: ${li.value} seconds;
-                        `
+                    let get_li_text = (secs) =>  {
+                        return `Game completed in: ${game.completion}%,
+                        expires in: ${secs} seconds;`
+                    }
+                    li.textContent = get_li_text(li.value)
+                    
+                    // expiration countdown
                     let interval = setInterval(function() {
+                        console.log('INTERVAL')
                         --li.value
-                        li.textContent = ` 
-                            Game completed in: ${game.completion}%,
-                            expires in: ${li.value} seconds;
-                        `
+                        if (li.value <= 0) {
+                            clearInterval(interval)
+                            li.parentElement.removeChild(li)
+                        } else {
+                            li.textContent = get_li_text(li.value)
+                        }
                     }, 1000)
+                    
                     this.current_games_list.appendChild(li)
                 })
             }
