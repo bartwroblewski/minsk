@@ -140,7 +140,6 @@
                     
                     // expiration countdown
                     let interval = setInterval(function() {
-                        console.log('INTERVAL')
                         --li.value
                         if (li.value <= 0) {
                             clearInterval(interval)
