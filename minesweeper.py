@@ -21,7 +21,6 @@ class GameSettings:
         self.n_cols = self.settings_per_difficulty[difficulty]['n_cols']
         self.n_mines = self.settings_per_difficulty[difficulty]['n_mines']
                 
-
 class GamesManager:
     def __init__(self):
         self.games = {}
