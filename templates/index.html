@@ -187,18 +187,16 @@
                 
                 this.socket.emit('start_new_game')
                 
-                let interval = setInterval(() => {
-                    this.socket.emit('refresh_games_list')
-                }, 1000)
+                //~ let interval = setInterval(() => {
+                    //~ this.socket.emit('refresh_games_list')
+                //~ }, 1000)
                 
                 this.socket.on('new_game_started', response => {
 					this.model.game_id = response['game_id']
-					this.view.drawBoard(response['board'])
-					this.socket.emit('refresh_games_list')
+					this.view.drawBoard(response['board'])					
 				})
 				
 				this.socket.on('games_list_refreshed', (response) => {
-                    console.log('model id', this.model.id)
 					this.view.refreshGamesList(response['games_list'], this.model.game_id)
 				})
 				
@@ -214,7 +212,6 @@
                             this.view.end_status.textContent = response.end_status
                         }	
                     }
-                    this.socket.emit('refresh_games_list')
 				})
             }
             
@@ -223,10 +220,12 @@
                 this.socket.emit('switch_game', {
 					'game_id': game_id,
 				})
+                this.socket.emit('refresh_games_list')
             }
             
             handleNewGameClick = () => {
                 this.socket.emit('start_new_game')
+                this.socket.emit('refresh_games_list')
             }
             
             handleBoardClick = (row, col) => {
@@ -244,6 +243,7 @@
                     game_id: this.model.game_id,
                     move_name: move_name,
                 })
+                this.socket.emit('refresh_games_list')
             }
         }
         
