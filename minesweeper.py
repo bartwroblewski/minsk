@@ -57,8 +57,8 @@ class GamesManager:
                 d['completion'] = str(self.games[k]['game'].check_completion())
                 d['id'] = k
                 nonexpired_games.append(d)
-        nonexpired_sorted_by_secs = sorted(nonexpired_games, key=lambda x: x['secs_to_expire'])
-        return nonexpired_sorted_by_secs
+        #~ nonexpired_sorted_by_secs = sorted(nonexpired_games, key=lambda x: x['secs_to_expire'])
+        return nonexpired_games
        
 class Game:
     def __init__(self):      
