@@ -137,31 +137,16 @@
                 current_games.forEach(game => {
                     let li = document.createElement('li')
                     li.id = game.id
-                    li.value = game.secs_to_expire
                     
                     if (game.id === game_id) {
                         li.style.color = 'green'
                     } else {
                         li.style.color = ''
                     }
-                    
-                    let get_li_text = (secs) =>  {
-                        return `Game completed in: ${game.completion}%,
-                        expires in: ${secs} seconds;`
-                    }
-                    li.textContent = get_li_text(li.value)
-                    
-                    // expiration countdown
-                    let interval = setInterval(function() {
-                        --li.value
-                        if (li.value <= 0) {
-                            clearInterval(interval)
-                            li.parentElement.removeChild(li)
-                        } else {
-                            li.textContent = get_li_text(li.value)
-                        }
-                    }, 1000)
-                    
+                    li.textContent = 
+                        `Game completed in: ${game.completion}%,
+                        expires in: ${game.secs_to_expire} seconds;`
+
                     this.current_games_list.appendChild(li)
                 })
             }
@@ -215,10 +200,8 @@
                 //~ })
                 
                 this.startNewGame()
+                fetch("{{url_for('refresh_games_list_periodically') }}")
                 
-                //~ let interval = setInterval(() => {
-                    //~ this.socket.emit('refresh_games_list')
-                //~ }, 1000)
                 
                 this.socket.on('new_game_started', response => {
                     this.model.game_id = response['game_id']
