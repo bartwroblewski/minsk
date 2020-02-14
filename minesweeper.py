@@ -176,14 +176,10 @@ class Board:
         self.update_neighbours()
         
     def get_board(self):
-        board = []
-        for n_row in range(self.n_rows):
-            row = [
-                Cell(n_row, n_col)
-                for n_col in range(self.n_cols)
-            ]
-            board.append(row)
-        return board
+        return [
+            [Cell(row, col) for col in range(self.n_cols)]
+            for row in range(self.n_rows)
+        ]
     
     def get_random_cell(self):
         random_row = random.randint(0, self.n_rows - 1)
