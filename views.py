@@ -1,3 +1,5 @@
+import time
+
 from flask import (
     Flask, 
     render_template, 
@@ -35,7 +37,6 @@ def handle_start_new_game(data):
 
 @app.route('/refresh_games_list_periodically')
 def refresh_games_list_periodically():
-    import time
     while True:
         response = {
             'games_list': games_manager.get_nonexpired_games(),
