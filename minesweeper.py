@@ -216,6 +216,7 @@ class Board:
             0 <= row <= (self.n_rows - 1) and \
             0 <= col <= (self.n_cols - 1)
         )
+        
     def place_mine_randomly(self):
         random_cell = self.get_random_cell()
         if random_cell.mined:
