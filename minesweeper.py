@@ -212,8 +212,7 @@ class Board:
         '''Check if the given row/cell combination
         lies within the board.
         '''
-        if 0 <= row <= (self.n_rows - 1) and 0 <= col <= (self.n_cols - 1):
-            return True
+        return 0 <= row <= (self.n_rows - 1) and 0 <= col <= (self.n_cols - 1):
             
     def place_mine_randomly(self):
         random_cell = self.get_random_cell()
