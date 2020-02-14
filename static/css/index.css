@@ -1,0 +1,57 @@
+.silver_text {
+    color: rgb(150, 150, 150);
+}
+
+.grey {
+    background: grey;
+}
+
+.green_text {
+    color: green;
+}
+                
+#board {
+    background: rgb(175, 175, 175);
+    font-size: 10px;
+}
+
+td {
+    border: 1px solid black;
+    width: 15px;
+    height: 15px;
+    text-align: center;
+} 
+
+#board_and_list {
+    width: 100%;
+    display: flex;
+}
+
+#controls {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#new_game_button {
+    margin-right: 20px;
+}
+
+#end_status {
+    color: red;
+}
+
+#board_container {
+    width: 50%;
+}
+
+#current_games_list {
+    white-space: nowrap;
+    width: 50%;
+}
+
+li:hover {
+    cursor: pointer;
+    color: silver;
+}
+    
