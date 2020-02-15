@@ -7,14 +7,14 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 games_manager = GamesManager()
-        
-@app.route('/')
-def index(): 
-    return render_template('index.html')
 
 #~ @socketio.on('socket_connected')
 #~ def handle_my_event(message):
-    #~ print(message)
+    #~ print(message)     
+
+@app.route('/')
+def index(): 
+    return render_template('index.html')
 
 @socketio.on('start_new_game')
 def handle_start_new_game(data):
@@ -69,4 +69,3 @@ def handle_switch_game(data):
     
 if __name__ == '__main__':
     socketio.run(app, port=8000)
-    #~ socketio.run(app, host='192.168.1.14', port=5010)
