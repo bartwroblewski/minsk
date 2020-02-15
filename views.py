@@ -1,11 +1,4 @@
-import time
-
-from flask import (
-    Flask, 
-    render_template, 
-    jsonify,
-    request,
-)
+from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
 from minesweeper import Game, GamesManager
@@ -14,15 +7,6 @@ games_manager = GamesManager()
 
 app = Flask(__name__)
 socketio = SocketIO(app)
-
-@app.route('/refresh_games_list_periodically')
-def refresh_games_list_periodically():
-    while True:
-        response = {
-            'games_list': games_manager.get_nonexpired_games(),
-        }
-        socketio.emit('games_list_refreshed', response)
-        time.sleep(1)
         
 @app.route('/')
 def index(): 
@@ -43,9 +27,7 @@ def handle_start_new_game(data):
         'board': game.board.to_dict(),
     }
     emit('new_game_started', response)
-
-
-        
+     
 @socketio.on('refresh_games_list')
 def handle_refresh_games_list():
     response = {

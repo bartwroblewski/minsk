@@ -44,15 +44,31 @@ class View {
         current_games.forEach(game => {
             let li = document.createElement('li')
             li.id = game.id
+            li.value = game.secs_to_expire
             
             if (game.id === game_id) {
                 li.style.color = 'green'
             } else {
                 li.style.color = ''
             }
-            li.textContent = 
-                `Game completed in: ${game.completion}%,
-                expires in: ${game.secs_to_expire} seconds;`
+            
+            let get_li_text = secs => {
+                return `Game completed in: ${game.completion}%,
+                expires in: ${secs} seconds;`
+            }
+            li.textContent = get_li_text(li.value)
+            
+            // expiration countdown
+            let interval = setInterval(() => {
+                --li.value
+                if (li.value > 0) {
+                    li.textContent = get_li_text(li.value)
+                } else {
+                    clearInterval(interval)
+                    li.parentElement.removeChild(li)
+                }
+                console.log('interval')
+            }, 1000)         
 
             this.current_games_list.appendChild(li)
         })
@@ -106,9 +122,7 @@ class Controller {
             //~ socket.emit('socket_connected', {data: 'Im connected!'})
         //~ })
         
-        this.startNewGame()
-        fetch(refresh_games_list_periodically_url)
-        
+        this.startNewGame()        
         
         this.socket.on('new_game_started', response => {
             this.model.game_id = response['game_id']
