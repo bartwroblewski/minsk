@@ -3,10 +3,10 @@ from flask_socketio import SocketIO, emit
 
 from minesweeper import Game, GamesManager
 
-games_manager = GamesManager()
-
 app = Flask(__name__)
 socketio = SocketIO(app)
+
+games_manager = GamesManager()
         
 @app.route('/')
 def index(): 
