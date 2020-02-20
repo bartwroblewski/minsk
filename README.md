@@ -1,6 +1,6 @@
 # minsk
 
-MInesweeper in FlaSK.
+MINesweeper in FlaSK.
 
 Multiplayer. With SocketIO.
 
