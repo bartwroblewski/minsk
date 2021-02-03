@@ -14,7 +14,7 @@ Each game expires after some time of inactivity.
 
 ## Technology stack
 
-Backend: Python & Flask. Flask SocketIO is used to handle websockets connection and broadcast board changes to other players.
+Backend: Python & Flask. Flask SocketIO is used to handle websockets connection and broadcast board changes to other players of the same game.
 
 Frontend: vanilla JavaScript.
 
