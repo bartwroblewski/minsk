@@ -4,8 +4,6 @@
 
 A multiplayer implementation of the popular Minesweeper game.
 
-Multiplayer. With SocketIO.
-
 ## Usage
 
 Live version [here](http://stravageartracker.herokuapp.com/).
