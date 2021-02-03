@@ -8,7 +8,7 @@ A multiplayer implementation of the popular Minesweeper game.
 
 Live version [here](http://stravageartracker.herokuapp.com/).
 
-You can create your own game and wait for others to join or join someone else's game.
+You can start a new game and wait for others to join or join someone else's game.
 
 Each game expires after some time of inactivity.
 
