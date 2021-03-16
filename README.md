@@ -6,7 +6,7 @@ A multiplayer implementation of the popular Minesweeper game.
 
 ## Usage
 
-Live version [here](http://stravageartracker.herokuapp.com/).
+Live version [here](http://minsk.herokuapp.com/).
 
 You can start a new game and wait for others to join or join someone else's game.
 
