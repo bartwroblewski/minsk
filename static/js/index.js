@@ -188,5 +188,4 @@ class Controller {
         })
     }
 }
-
 let app = new Controller(new Model(), new View(), io())

@@ -4,6 +4,7 @@ WORKDIR /app
 
 RUN pip install flask
 RUN pip install flask-socketio
+RUN pip install simple-websocket
 RUN pip install gunicorn
 
 COPY . .
