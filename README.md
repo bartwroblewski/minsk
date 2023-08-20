@@ -10,7 +10,8 @@ A multiplayer implementation of the popular Minesweeper game.
 ## Usage
 
 You can start a new game and wait for others to join or join someone else's game.
-(or just open the app in a new browser app play by against yourself!)
+
+(or just open the app in a new browser app play against yourself!)
 
 Each game expires after some time of inactivity.
 
